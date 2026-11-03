@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-bs-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>maromba</title>
+  <meta name="theme-color" content="#0f7c86">
+  <link id="lnkManifest" rel="manifest" href="https://ycnktfqvjpqbxfvxafrz.supabase.co/functions/v1/app-manifest?b=https://ederramossupervisor.github.io/maromba/">
+  <link id="lnkFavicon" rel="icon" type="image/png" href="img/icon-192.png">
+  <link id="lnkApple" rel="apple-touch-icon" href="img/icon-192.png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <link href="css/app.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- ============ LOGIN / CADASTRO ============ -->
+<div id="authOverlay" class="auth-overlay">
+  <div class="auth-card">
+    <img src="img/login-logo.png" alt="maromba" class="auth-logo">
+
+    <form id="frmEntrar" class="auth-view" novalidate>
+      <h1 class="h5 mb-3">Entrar</h1>
+      <label class="form-label" for="entEmail">E-mail</label>
+      <input id="entEmail" type="email" class="form-control mb-2" autocomplete="email" required>
+      <label class="form-label" for="entSenha">Senha</label>
+      <input id="entSenha" type="password" class="form-control mb-3" autocomplete="current-password" required>
+      <button class="btn btn-primary w-100" type="submit">Entrar</button>
+      <div class="auth-links">
+        <a href="#" data-ir="Esqueci">Esqueci minha senha</a>
+        <a href="#" data-ir="Criar">Tenho um convite</a>
+      </div>
+    </form>
+
+    <form id="frmCriar" class="auth-view d-none" novalidate>
+      <h1 class="h5 mb-3">Criar conta</h1>
+      <label class="form-label" for="criConvite">Código do convite</label>
+      <input id="criConvite" type="text" class="form-control mb-2 text-uppercase" autocomplete="off" required>
+      <label class="form-label" for="criEmail">E-mail</label>
+      <input id="criEmail" type="email" class="form-control mb-2" autocomplete="email" required>
+      <label class="form-label" for="criSenha">Senha (mínimo 6 caracteres)</label>
+      <input id="criSenha" type="password" class="form-control mb-3" autocomplete="new-password" minlength="6" required>
+      <button class="btn btn-primary w-100" type="submit">Criar conta</button>
+      <div class="auth-links"><a href="#" data-ir="Entrar">Já tenho conta</a></div>
+    </form>
+
+    <form id="frmEsqueci" class="auth-view d-none" novalidate>
+      <h1 class="h5 mb-3">Recuperar senha</h1>
+      <p class="small text-body-secondary">Informe seu e-mail e enviaremos um link para criar uma nova senha.</p>
+      <label class="form-label" for="esqEmail">E-mail</label>
+      <input id="esqEmail" type="email" class="form-control mb-3" autocomplete="email" required>
+      <button class="btn btn-primary w-100" type="submit">Enviar link</button>
+      <div class="auth-links"><a href="#" data-ir="Entrar">Voltar</a></div>
+    </form>
+
+    <form id="frmNova" class="auth-view d-none" novalidate>
+      <h1 class="h5 mb-3">Nova senha</h1>
+      <label class="form-label" for="novSenha">Nova senha</label>
+      <input id="novSenha" type="password" class="form-control mb-2" autocomplete="new-password" minlength="6" required>
+      <label class="form-label" for="novSenha2">Repita a nova senha</label>
+      <input id="novSenha2" type="password" class="form-control mb-3" autocomplete="new-password" minlength="6" required>
+      <button class="btn btn-primary w-100" type="submit">Salvar nova senha</button>
+    </form>
+
+    <div id="authMsg" class="alert d-none mt-3 mb-0 py-2 small" role="alert"></div>
+  </div>
+</div>
+
+<!-- ============ APLICATIVO ============ -->
+<div id="appShell" class="app-shell d-none">
+  <aside class="sidebar d-none d-lg-flex flex-column">
+    <div class="brand"><span class="brand-icone" data-app-icone></span><span class="brand-nome" data-app-nome>maromba</span></div>
+    <nav class="nav flex-column" data-menu></nav>
+  </aside>
+
+  <div class="conteudo">
+    <header class="topbar d-lg-none">
+      <button class="btn btn-link text-reset p-2" data-bs-toggle="offcanvas" data-bs-target="#menuLateral" aria-label="Abrir menu"><i class="fa-solid fa-bars fa-lg"></i></button>
+      <span class="brand-icone" data-app-icone></span>
+      <span class="brand-nome" data-app-nome>maromba</span>
+    </header>
+
+    <div id="avisoAtualizacao" class="alert alert-info d-none m-3 mb-0 d-flex align-items-center justify-content-between" role="alert">
+      <span>Há uma nova versão do app.</span>
+      <button id="btnAtualizar" class="btn btn-sm btn-primary">Atualizar agora</button>
+    </div>
+
+    <main class="container-fluid py-3 px-3 px-lg-4">
+
+      <section class="pagina" data-pagina="inicio">
+        <h1 class="h4 mb-3">Início</h1>
+        <div class="card"><div class="card-body">
+          <p class="mb-1 fw-semibold">Tudo pronto para começar.</p>
+          <p class="mb-0 text-body-secondary">O registro de treinos chega na próxima etapa. Por enquanto, personalize o nome e o ícone do app em Configurações.</p>
+        </div></div>
+      </section>
+
+      <section class="pagina d-none" data-pagina="config">
+        <h1 class="h4 mb-3">Configurações</h1>
+
+        <div class="card mb-3"><div class="card-body">
+          <h2 class="h6">Perfil</h2>
+          <form id="frmPerfil" novalidate>
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label" for="pfNome">Nome do app</label>
+                <input id="pfNome" class="form-control" maxlength="45" placeholder="Ex.: Treino do João">
+              </div>
+              <div class="col-8 col-md-4">
+                <label class="form-label" for="pfEmoji">Ícone (emoji)</label>
+                <input id="pfEmoji" class="form-control" maxlength="4" placeholder="💪">
+              </div>
+              <div class="col-4 col-md-2">
+                <label class="form-label" for="pfCor">Cor</label>
+                <input id="pfCor" type="color" class="form-control form-control-color w-100" value="#0f7c86">
+              </div>
+              <div class="col-12">
+                <label class="form-label" for="pfFoto">Ou use uma foto como ícone</label>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                  <input id="pfFoto" type="file" accept="image/*" class="form-control" style="max-width:320px">
+                  <span class="brand-icone brand-icone-grande" id="pfPrevia"></span>
+                  <button type="button" id="btnRemoverFoto" class="btn btn-outline-secondary btn-sm d-none">Remover foto</button>
+                </div>
+              </div>
+              <div class="col-6 col-md-3"><label class="form-label" for="pfPeso">Peso (kg)</label><input id="pfPeso" type="number" step="0.1" min="1" max="499" class="form-control" inputmode="decimal"></div>
+              <div class="col-6 col-md-3"><label class="form-label" for="pfAltura">Altura (cm)</label><input id="pfAltura" type="number" min="50" max="260" class="form-control" inputmode="numeric"></div>
+              <div class="col-6 col-md-3"><label class="form-label" for="pfAno">Ano de nascimento</label><input id="pfAno" type="number" min="1900" max="2100" class="form-control" inputmode="numeric"></div>
+              <div class="col-6 col-md-3"><label class="form-label" for="pfObjetivo">Objetivo</label>
+                <select id="pfObjetivo" class="form-select">
+                  <option value="">—</option>
+                  <option value="emagrecer">Emagrecer</option>
+                  <option value="ganhar_massa">Ganhar massa</option>
+                  <option value="saude_geral">Saúde geral</option>
+                  <option value="condicionamento">Condicionamento</option>
+                </select>
+              </div>
+            </div>
+            <p class="small text-body-secondary mt-2 mb-3">Peso, altura, ano e objetivo são opcionais e ficam só com você.</p>
+            <button class="btn btn-primary" type="submit">Salvar perfil</button>
+          </form>
+        </div></div>
+
+        <div class="card mb-3"><div class="card-body">
+          <h2 class="h6">Aparência</h2>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="swEscuro">
+            <label class="form-check-label" for="swEscuro">Tema escuro</label>
+          </div>
+        </div></div>
+
+        <div class="card mb-3 d-none" id="cardConvites"><div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h2 class="h6 mb-0">Convites (administrador)</h2>
+            <button id="btnNovoConvite" class="btn btn-sm btn-primary"><i class="fa-solid fa-plus me-1"></i>Gerar convite</button>
+          </div>
+          <p class="small text-body-secondary">Cada código vale por 7 dias e só pode ser usado uma vez.</p>
+          <div id="listaConvites" class="list-group"></div>
+        </div></div>
+
+        <div class="card mb-3"><div class="card-body">
+          <h2 class="h6">Sobre</h2>
+          <p class="small mb-2">O maromba é um registro pessoal de atividades físicas e não substitui a orientação de um médico ou educador físico. Quem tem alguma condição de saúde deve consultar um profissional antes de aumentar a intensidade dos treinos. O app não oferece diagnóstico, dieta nem prescrição de exercícios.</p>
+          <p class="small text-body-secondary mb-0">Versão <span id="appVersao"></span></p>
+        </div></div>
+
+        <button id="btnSair" class="btn btn-outline-danger"><i class="fa-solid fa-right-from-bracket me-1"></i>Sair</button>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div class="offcanvas offcanvas-start" tabindex="-1" id="menuLateral" aria-label="Menu">
+  <div class="offcanvas-header">
+    <div class="brand"><span class="brand-icone" data-app-icone></span><span class="brand-nome" data-app-nome>maromba</span></div>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
+  </div>
+  <div class="offcanvas-body"><nav class="nav flex-column" data-menu></nav></div>
+</div>
+
+<div class="modal fade" id="modalConfirmar" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm"><div class="modal-content">
+    <div class="modal-body" id="modalConfirmarTexto"></div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" id="modalConfirmarNao">Cancelar</button>
+      <button type="button" class="btn btn-primary" id="modalConfirmarSim">Confirmar</button>
+    </div>
+  </div></div>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3" id="toasts"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dexie@3.2.7/dist/dexie.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/util.js"></script>
+<script src="js/api.js"></script>
+<script src="js/perfil.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

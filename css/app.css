@@ -1,0 +1,36 @@
+:root{
+  --bs-primary:#0f7c86; --bs-primary-rgb:15,124,134;
+  --mb-ink:#13222b; --mb-bg:#eef2f4; --mb-side:#13222b;
+  --bs-body-font-family:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+[data-bs-theme="dark"]{ --mb-bg:#0e171d; }
+body{ background:var(--mb-bg); }
+h1,h2,h3,.brand-nome{ font-family:"Barlow Condensed","Barlow",system-ui,sans-serif; letter-spacing:.2px; }
+.btn-primary{ --bs-btn-bg:#0f7c86; --bs-btn-border-color:#0f7c86; --bs-btn-hover-bg:#0c6870; --bs-btn-hover-border-color:#0c6870; --bs-btn-active-bg:#0a5b62; --bs-btn-disabled-bg:#0f7c86; }
+a{ color:#0f7c86; }
+:focus-visible{ outline:3px solid #f2a900; outline-offset:2px; }
+
+/* login */
+.auth-overlay{ position:fixed; inset:0; z-index:2000; display:flex; align-items:center; justify-content:center; padding:16px;
+  background:#0a2834 url("../img/fundo-splash.png") center/cover no-repeat; overflow:auto; }
+.auth-card{ width:100%; max-width:380px; background:var(--bs-body-bg); border-radius:14px; padding:22px 22px 20px; box-shadow:0 12px 40px rgba(0,0,0,.35); }
+.auth-logo{ display:block; width:210px; max-width:70%; margin:-6px auto 14px; padding:14px 16px; background:#0f4a55; border-radius:10px; }
+.auth-links{ display:flex; justify-content:space-between; gap:12px; margin-top:14px; font-size:.9rem; }
+
+/* shell */
+.app-shell{ display:flex; min-height:100vh; }
+.sidebar{ width:230px; flex:0 0 230px; background:var(--mb-side); color:#e8eef1; padding:16px 12px; position:sticky; top:0; height:100vh; }
+.sidebar .nav-link, #menuLateral .nav-link{ display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; color:inherit; min-height:44px; }
+.sidebar .nav-link:hover{ background:rgba(255,255,255,.08); }
+.sidebar .nav-link.ativo, #menuLateral .nav-link.ativo{ background:#0f7c86; color:#fff; }
+#menuLateral .nav-link{ color:var(--bs-body-color); } #menuLateral .nav-link.ativo{ color:#fff; }
+.conteudo{ flex:1; min-width:0; }
+.topbar{ display:flex; align-items:center; gap:10px; padding:6px 10px; background:var(--mb-side); color:#fff; position:sticky; top:0; z-index:100; }
+.topbar .btn-link{ color:#fff !important; }
+.brand{ display:flex; align-items:center; gap:10px; font-size:1.35rem; font-weight:600; margin-bottom:10px; }
+.brand-icone{ width:32px; height:32px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; font-size:20px; background:rgba(255,255,255,.14); overflow:hidden; flex:none; }
+.brand-icone img{ width:100%; height:100%; object-fit:cover; }
+.brand-icone-grande{ width:56px; height:56px; font-size:32px; background:#13222b; }
+.card{ border:0; box-shadow:0 1px 3px rgba(0,0,0,.08); }
+#avisoAtualizacao.d-none{ display:none !important; }
+@media (prefers-reduced-motion:reduce){ *{ transition:none !important; animation:none !important; } }
