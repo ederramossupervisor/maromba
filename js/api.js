@@ -3,6 +3,11 @@ var Api = {
   abrirDb: function (userId) {
     Api.db = new Dexie('AppDB_' + userId);
     Api.db.version(1).stores({ configuracoes: 'chave' });
+    Api.db.version(2).stores({
+      configuracoes: 'chave',
+      exercicios: 'id',
+      sessoes: 'id,data,inicio,pendente'
+    });
     return Api.db;
   },
   rpc: async function (nome, args) {

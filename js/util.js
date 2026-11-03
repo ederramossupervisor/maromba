@@ -1,5 +1,5 @@
 var Util = {
-  VERSAO: '1.0.0',
+  VERSAO: '2.0.0',
   userId: null,
   esc: function (s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {

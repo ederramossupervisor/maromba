@@ -1,9 +1,9 @@
-const VERSAO = 'v1';
+const VERSAO = 'v2';
 const CACHE_APP = 'app-' + VERSAO;
 const CACHE_RT = 'app-runtime-' + VERSAO;
 const ARQUIVOS = [
   './', 'index.html', 'css/app.css',
-  'js/supabase-client.js', 'js/util.js', 'js/api.js', 'js/perfil.js', 'js/auth.js', 'js/app.js',
+  'js/supabase-client.js', 'js/util.js', 'js/api.js', 'js/dados.js', 'js/perfil.js', 'js/treino.js', 'js/historico.js', 'js/auth.js', 'js/app.js',
   'img/icon-192.png', 'img/icon-512.png', 'img/login-logo.png', 'img/fundo-splash.png'
 ];
 

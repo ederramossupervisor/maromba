@@ -1,6 +1,8 @@
 var App = {
   paginas: [
     { id: 'inicio', nome: 'Início', icone: 'fa-house' },
+    { id: 'registrar', nome: 'Registrar treino', icone: 'fa-dumbbell' },
+    { id: 'historico', nome: 'Histórico', icone: 'fa-clock-rotate-left' },
     { id: 'config', nome: 'Configurações', icone: 'fa-gear' }
   ],
 
@@ -19,6 +21,8 @@ var App = {
     var inst = bootstrap.Offcanvas.getInstance(oc); if (inst) inst.hide();
     window.scrollTo(0, 0);
     if (id === 'config') App.carregarConvites();
+    if (id === 'registrar') Treino.aoAbrir();
+    if (id === 'historico') Historico.aoAbrir();
   },
 
   /* ---- convites (somente administrador) ---- */
@@ -85,16 +89,20 @@ var App = {
   },
 
   aposLogin: async function () {
+    await Dados.carregarLocal();
     App.ir((location.hash || '#inicio').replace('#', ''));
     try { App.ehAdmin = await Api.admin.ehAdmin(); } catch (e) { App.ehAdmin = false; }
     document.getElementById('cardConvites').classList.toggle('d-none', !App.ehAdmin);
     if (App.ehAdmin) App.carregarConvites();
+    Dados.iniciar();
   },
 
   init: function () {
     document.getElementById('appVersao').textContent = Util.VERSAO;
     App.montarMenu();
-    Perfil.ligarForm();      // ligado na inicialização, não só ao abrir Configurações
+    Perfil.ligarForm();
+    Treino.init();
+    Historico.init();      // ligado na inicialização, não só ao abrir Configurações
     App.ligarConvites();
     var sw = document.getElementById('swEscuro');
     sw.checked = Util.tema.get() === 'dark';
