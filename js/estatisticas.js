@@ -332,7 +332,7 @@ var Estat = {
   gRecordes: function () {
     var lista = Estat.recordes();
     Estat.$('stRecordes').innerHTML = lista.length ? lista.map(function (r) {
-      return '<div class="list-group-item"><div class="fw-semibold">' + Util.esc(r.ex.icone) + ' ' + Util.esc(r.ex.nome) + '</div><div class="small">' +
+      return '<div class="list-group-item"><div class="fw-semibold">' + Util.iconeEx(r.ex) + ' ' + Util.esc(r.ex.nome) + '</div><div class="small">' +
         r.marcas.map(function (m) { return '<span class="me-3">' + Estat.NOMES_REC[m.k] + ': <strong>' + Estat.fmtRec(m.k, m.v) + '</strong> <span class="text-body-secondary">(' + Estat.brAno(m.d) + ')</span></span>'; }).join('') + '</div></div>';
     }).join('') : '<div class="list-group-item text-body-secondary small">Seus recordes aparecem aqui conforme você registra treinos.</div>';
     return lista;

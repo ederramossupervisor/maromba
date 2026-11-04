@@ -235,7 +235,7 @@ var Metas = {
     Metas._verificando = false;
   },
   celebrar: function (lista) {
-    Metas.$('listaMetasCumpridas').innerHTML = lista.map(function (r) { return '<li class="list-group-item">🎯 <strong>' + Metas.esc(r.m.titulo) + '</strong></li>'; }).join('');
+    Metas.$('listaMetasCumpridas').innerHTML = lista.map(function (r) { return '<li class="list-group-item"><i class="fa-solid fa-bullseye me-1"></i> <strong>' + Metas.esc(r.m.titulo) + '</strong></li>'; }).join('');
     bootstrap.Modal.getOrCreateInstance(Metas.$('modalMetaCumprida')).show();
     Util.confete();
   },
@@ -291,7 +291,7 @@ var Metas = {
     Metas.$('listaHistoricoMetas').innerHTML = h.length ? h.map(function (x) {
       return '<div class="list-group-item d-flex justify-content-between align-items-center gap-2"><div><div class="small fw-semibold">' + Metas.esc(x.m.titulo) + '</div>' +
         '<div class="small text-body-secondary">' + Metas.esc(x.rotulo) + ' · ' + Metas.esc(x.texto) + '</div></div>' +
-        '<span class="badge text-bg-' + (x.ok ? 'success' : 'secondary') + '">' + (x.ok ? '✓ Cumprida' : 'Não cumprida') + '</span></div>';
+        '<span class="badge text-bg-' + (x.ok ? 'success' : 'secondary') + '">' + (x.ok ? '<i class="fa-solid fa-check me-1"></i>Cumprida' : 'Não cumprida') + '</span></div>';
     }).join('') : '<div class="list-group-item small text-body-secondary">O histórico aparece quando o primeiro período terminar.</div>';
     var desc = Dados.descanso();
     document.querySelectorAll('[data-descanso]').forEach(function (c) { c.checked = desc.indexOf(Number(c.getAttribute('data-descanso'))) >= 0; });

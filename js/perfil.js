@@ -13,15 +13,19 @@ var Perfil = {
   },
 
   iconeEhFoto: function (ic) { return typeof ic === 'string' && ic.indexOf('img:') === 0; },
-  iconeEmoji: function (ic) { return (ic && ic.indexOf('emoji:') === 0) ? ic.slice(6) : '💪'; },
+  /* Ícone escolhido ('fa:nome'). Perfis antigos com emoji passam a usar o haltere. */
+  iconeFa: function (ic) {
+    var k = (ic && ic.indexOf('fa:') === 0) ? ic.slice(3) : '';
+    return Util.FA_ICONES.some(function (i) { return i.k === k; }) ? k : 'dumbbell';
+  },
   iconeHtml: function (ic) {
     if (Perfil.iconeEhFoto(ic)) return '<img alt="" src="' + Util.esc(ic.slice(4)) + '">';
-    return Util.esc(Perfil.iconeEmoji(ic));
+    return '<i class="fa-solid fa-' + Perfil.iconeFa(ic) + '" aria-hidden="true"></i>';
   },
 
   /* PNG estático do ícone (para favicon e apple-touch-icon) */
   iconePng: function (ic, cor, tam) {
-    return new Promise(function (resolve) {
+    return new Promise(async function (resolve) {
       var c = document.createElement('canvas'); c.width = c.height = tam;
       var x = c.getContext('2d');
       if (Perfil.iconeEhFoto(ic)) {
@@ -31,16 +35,20 @@ var Perfil = {
         im.src = ic.slice(4);
         return;
       }
+      var k = Perfil.iconeFa(ic), cp = Util.FA_ICONES.filter(function (i) { return i.k === k; })[0].cp;
+      var ch = String.fromCodePoint(parseInt(cp, 16)), fonte = '900 ' + Math.round(tam * 0.5) + 'px "Font Awesome 6 Free"';
+      try { await document.fonts.load(fonte, ch); } catch (e) { /* segue sem a fonte */ }
+      if (!document.fonts.check(fonte, ch)) { resolve(null); return; }   // sem a fonte: mantém o ícone atual
       x.fillStyle = cor || '#5C6B5A'; x.fillRect(0, 0, tam, tam);
-      x.font = Math.round(tam * 0.62) + 'px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
-      x.fillText(Perfil.iconeEmoji(ic), tam / 2, tam / 2 + tam * 0.04);
+      x.fillStyle = '#fff'; x.font = fonte; x.textAlign = 'center'; x.textBaseline = 'middle';
+      x.fillText(ch, tam / 2, tam / 2 + tam * 0.02);
       resolve(c.toDataURL('image/png'));
     });
   },
 
   aplicar: async function () {
     var d = Perfil.dados || {};
-    var nome = d.nome_app || 'maromba', cor = d.cor || '#5C6B5A', ic = d.icone || 'emoji:💪';
+    var nome = d.nome_app || 'maromba', cor = d.cor || '#5C6B5A', ic = d.icone || 'fa:dumbbell';
     document.title = nome;
     document.querySelectorAll('[data-app-nome]').forEach(function (e) { e.textContent = nome; });
     document.querySelectorAll('[data-app-icone]').forEach(function (e) { e.innerHTML = Perfil.iconeHtml(ic); });
@@ -57,7 +65,13 @@ var Perfil = {
   preencherForm: function () {
     var d = Perfil.dados || {};
     document.getElementById('pfNome').value = d.nome_app || '';
-    document.getElementById('pfEmoji').value = Perfil.iconeEhFoto(d.icone) ? '' : Perfil.iconeEmoji(d.icone);
+    var k = Perfil.iconeFa(d.icone);
+    document.getElementById('pfEmoji').value = k;
+    Util.seletorIcones(document.getElementById('pfIcones'), Perfil.iconeEhFoto(d.icone) ? '' : k, function (nome) {
+      document.getElementById('pfEmoji').value = nome;
+      Perfil.fotoNova = null; document.getElementById('pfFoto').value = '';   // escolher um ícone descarta a foto
+      Perfil.previa('fa:' + nome);
+    });
     document.getElementById('pfCor').value = d.cor || '#5C6B5A';
     document.getElementById('pfPeso').value = d.peso == null ? '' : d.peso;
     document.getElementById('pfAltura').value = d.altura == null ? '' : d.altura;
@@ -100,12 +114,7 @@ var Perfil = {
     });
     document.getElementById('btnRemoverFoto').addEventListener('click', function () {
       Perfil.fotoNova = null; document.getElementById('pfFoto').value = '';
-      Perfil.previa('emoji:' + (document.getElementById('pfEmoji').value || '💪'));
-    });
-    document.getElementById('pfEmoji').addEventListener('input', function (ev) {
-      if (Perfil.fotoNova === undefined && Perfil.iconeEhFoto((Perfil.dados || {}).icone)) return;
-      if (typeof Perfil.fotoNova === 'string') return;
-      Perfil.previa('emoji:' + (ev.target.value || '💪'));
+      Perfil.previa('fa:' + (document.getElementById('pfEmoji').value || 'dumbbell'));
     });
     document.getElementById('frmPerfil').addEventListener('submit', async function (ev) {
       ev.preventDefault();
@@ -113,7 +122,7 @@ var Perfil = {
       var icone;
       if (typeof Perfil.fotoNova === 'string') icone = 'img:' + Perfil.fotoNova;
       else if (Perfil.fotoNova === undefined && Perfil.iconeEhFoto((Perfil.dados || {}).icone)) icone = Perfil.dados.icone;
-      else icone = 'emoji:' + (document.getElementById('pfEmoji').value.trim() || '💪');
+      else icone = 'fa:' + (document.getElementById('pfEmoji').value || 'dumbbell');
       var campos = {
         nome_app: document.getElementById('pfNome').value.trim() || 'maromba',
         icone: icone,

@@ -107,7 +107,7 @@
         <div class="card mb-3"><div class="card-body">
           <div class="d-flex justify-content-between align-items-center"><h2 class="h6 mb-2">Meta em andamento</h2><a href="#metas" class="small">Ver metas</a></div>
           <div id="pnMeta"></div>
-          <div id="pnDescanso" class="small mt-2 d-none">🌿 Hoje é seu dia de descanso planejado. Sua sequência continua.</div>
+          <div id="pnDescanso" class="small mt-2 d-none"><i class="fa-solid fa-leaf me-1"></i>Hoje é seu dia de descanso planejado. Sua sequência continua.</div>
         </div></div>
         <div class="card mb-3"><div class="card-body">
           <h2 class="h6">Último treino</h2>
@@ -330,13 +330,14 @@
                 <label class="form-label" for="pfNome">Nome do app</label>
                 <input id="pfNome" class="form-control" maxlength="45" placeholder="Ex.: Treino do João">
               </div>
-              <div class="col-8 col-md-4">
-                <label class="form-label" for="pfEmoji">Ícone (emoji)</label>
-                <input id="pfEmoji" class="form-control" maxlength="4" placeholder="💪">
-              </div>
-              <div class="col-4 col-md-2">
-                <label class="form-label" for="pfCor">Cor</label>
+              <div class="col-12 col-md-6">
+                <label class="form-label" for="pfCor">Cor do ícone do app</label>
                 <input id="pfCor" type="color" class="form-control form-control-color w-100" value="#5C6B5A">
+              </div>
+              <div class="col-12">
+                <span class="form-label d-block">Ícone</span>
+                <div id="pfIcones" class="grade-icones" role="group" aria-label="Escolha um ícone"></div>
+                <input id="pfEmoji" type="hidden" value="dumbbell">
               </div>
               <div class="col-12">
                 <label class="form-label" for="pfFoto">Ou use uma foto como ícone</label>
@@ -428,7 +429,7 @@
       <details class="mt-3"><summary class="fw-semibold">Criar meu próprio exercício</summary>
         <form id="frmNovoEx" class="row g-2 mt-1" novalidate>
           <div class="col-8"><label class="form-label small mb-1" for="nxNome">Nome</label><input id="nxNome" class="form-control" maxlength="80"></div>
-          <div class="col-4"><label class="form-label small mb-1" for="nxIcone">Ícone</label><input id="nxIcone" class="form-control" maxlength="4" placeholder="⭐"></div>
+          <div class="col-4"><label class="form-label small mb-1" for="nxIcone">Ícone</label><select id="nxIcone" class="form-select"></select></div>
           <div class="col-6"><label class="form-label small mb-1" for="nxCategoria">Categoria</label><select id="nxCategoria" class="form-select">
             <option value="cardio">Cardio</option><option value="forca" selected>Força</option><option value="mobilidade">Mobilidade</option><option value="esporte">Esportes</option><option value="outro">Outro</option></select></div>
           <div class="col-6"><label class="form-label small mb-1" for="nxModo">Como medir</label><select id="nxModo" class="form-select">
@@ -453,7 +454,7 @@
 
 <div class="modal fade" id="modalRecorde" tabindex="-1" aria-labelledby="tituloRecorde" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
-    <div class="modal-header"><h2 class="modal-title h5" id="tituloRecorde">🏆 Novo recorde pessoal!</h2>
+    <div class="modal-header"><h2 class="modal-title h5" id="tituloRecorde"><i class="fa-solid fa-trophy me-1"></i>Novo recorde pessoal!</h2>
       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button></div>
     <div class="modal-body"><p class="mb-2">Parabéns, você superou uma marca sua:</p><ul class="list-group" id="listaRecordes"></ul></div>
     <div class="modal-footer"><button type="button" class="btn btn-primary" data-bs-dismiss="modal">Continuar</button></div>
@@ -490,7 +491,7 @@
 
 <div class="modal fade" id="modalMetaCumprida" tabindex="-1" aria-labelledby="tituloMetaCumprida" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
-    <div class="modal-header"><h2 class="modal-title h5" id="tituloMetaCumprida">🎉 Meta cumprida!</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button></div>
+    <div class="modal-header"><h2 class="modal-title h5" id="tituloMetaCumprida"><i class="fa-solid fa-champagne-glasses me-1"></i>Meta cumprida!</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button></div>
     <div class="modal-body"><p class="mb-2">Parabéns pela constância! Você alcançou:</p><ul class="list-group" id="listaMetasCumpridas"></ul></div>
     <div class="modal-footer"><button type="button" class="btn btn-primary" data-bs-dismiss="modal">Continuar</button></div>
   </div></div>

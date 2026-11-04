@@ -53,7 +53,7 @@ var Historico = {
     $('hLista').innerHTML = lista.map(function (s) {
       var itens = (s.itens || []).map(function (i) {
         var e = Dados.exMap[i.exercicio_id];
-        return '<li>' + (e ? Util.esc(e.icone) + ' <strong>' + Util.esc(e.nome) + '</strong>' : 'Exercício removido') +
+        return '<li>' + (e ? Util.iconeEx(e) + ' <strong>' + Util.esc(e.nome) + '</strong>' : 'Exercício removido') +
           (Dados.resumoItem(i) ? ' <span class="text-body-secondary">— ' + Util.esc(Dados.resumoItem(i)) + '</span>' : '') + '</li>';
       }).join('');
       var meta = [];
@@ -62,7 +62,7 @@ var Historico = {
       if (s.duracao_seg) meta.push('<i class="fa-regular fa-clock"></i> ' + Dados.fmtDur(s.duracao_seg));
       if (s.calorias) meta.push('≈ ' + Dados.fmtNum(s.calorias, 0) + ' kcal');
       if (s.rpe) meta.push('esforço ' + s.rpe + '/10');
-      if (s.humor) meta.push(Dados.HUMOR[s.humor - 1]);
+      if (s.humor) meta.push(Util.humorHtml(s.humor));
       return '<div class="card mb-2"><div class="card-body">' +
         '<div class="d-flex justify-content-between align-items-start gap-2">' +
         '<div><div class="fw-semibold">' + Util.esc(Dados.fmtDataHora(s.inicio)) +

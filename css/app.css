@@ -203,3 +203,16 @@ a:hover{ color:var(--primary-hover); }
 .confete{ position:fixed; inset:0; pointer-events:none; z-index:3000; overflow:hidden; }
 .confete span{ position:absolute; top:-12px; width:9px; height:14px; border-radius:2px; opacity:.95; animation:cair linear forwards; }
 @keyframes cair{ to{ transform:translateY(105vh) rotate(720deg); opacity:.9; } }
+
+/* ---------- ícones no lugar de emojis ---------- */
+.ico-ex{ color:var(--primary); }
+.humor-btn i{ font-size:1.35rem; }
+.humor-btn:not(.active) i{ color:var(--primary); }
+.humor-btn.active i{ color:#fff; }
+[data-bs-theme="dark"] .humor-btn.active i{ color:#16140f; }
+.grade-icones{ display:flex; flex-wrap:wrap; gap:6px; }
+.btn-icone{ width:44px; height:44px; border:2px solid var(--border-color); border-radius:var(--radius); background:transparent; color:var(--text-secondary); font-size:1.15rem; transition:background-color var(--transition),color var(--transition),border-color var(--transition); }
+.btn-icone:hover{ background:var(--primary-light); color:var(--primary); }
+.btn-icone.ativo{ border-color:var(--primary); background:var(--primary); color:#fff; }
+[data-bs-theme="dark"] .btn-icone.ativo{ color:#16140f; }
+.brand-icone i{ font-size:.95em; color:var(--primary); }

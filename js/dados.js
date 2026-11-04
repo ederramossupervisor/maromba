@@ -9,7 +9,6 @@ var Dados = {
   AMB: { casa: 'Casa', academia: 'Academia', ar_livre: 'Ar livre' },
   CAT: { cardio: 'Cardio', forca: 'Força', mobilidade: 'Mobilidade', esporte: 'Esportes', outro: 'Outro' },
   TIPO_TREINO: { leve: 'Leve', continuo: 'Contínuo', intervalado: 'Intervalado (HIIT)' },
-  HUMOR: ['😞', '😕', '😐', '🙂', '😄'],
 
   /* ---------- formatação ---------- */
   fmtNum: function (n, dec) {
@@ -109,7 +108,7 @@ var Dados = {
       var antes = prev.map(d.val).filter(function (v) { return v > 0; });
       if (!antes.length) return;
       var melhor = d.menor ? Math.min.apply(null, antes) : Math.max.apply(null, antes);
-      if (d.menor ? novo < melhor : novo > melhor) out.push({ exercicio: ex.nome, icone: ex.icone, rotulo: d.rot, valor: d.fmt(novo), anterior: d.fmt(melhor) });
+      if (d.menor ? novo < melhor : novo > melhor) out.push({ exercicio: ex.nome, iconeHtml: Util.iconeEx(ex), rotulo: d.rot, valor: d.fmt(novo), anterior: d.fmt(melhor) });
     });
     return out;
   },

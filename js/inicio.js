@@ -38,7 +38,7 @@ var Inicio = {
     if (!u) { box.innerHTML = '<p class="text-body-secondary mb-0">Você ainda não registrou treinos. Toque em “Registrar treino” para começar.</p>'; return; }
     var itens = (u.itens || []).slice(0, 4).map(function (i) {
       var e = Dados.exMap[i.exercicio_id];
-      return '<li>' + (e ? Util.esc(e.icone) + ' ' + Util.esc(e.nome) : 'Exercício removido') + (Dados.resumoItem(i) ? ' <span class="text-body-secondary">— ' + Util.esc(Dados.resumoItem(i)) + '</span>' : '') + '</li>';
+      return '<li>' + (e ? Util.iconeEx(e) + ' ' + Util.esc(e.nome) : 'Exercício removido') + (Dados.resumoItem(i) ? ' <span class="text-body-secondary">— ' + Util.esc(Dados.resumoItem(i)) + '</span>' : '') + '</li>';
     }).join('');
     var mais = (u.itens || []).length > 4 ? '<li class="text-body-secondary">+ ' + ((u.itens || []).length - 4) + ' exercício(s)</li>' : '';
     box.innerHTML = '<div class="fw-semibold">' + Util.esc(Dados.fmtDataHora(u.inicio)) + '</div>' +
