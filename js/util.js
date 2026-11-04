@@ -1,5 +1,5 @@
 var Util = {
-  VERSAO: '2.0.0',
+  VERSAO: '3.0.0',
   userId: null,
   esc: function (s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -47,7 +47,7 @@ var Util = {
   tema: {
     aplicar: function (t) { document.documentElement.setAttribute('data-bs-theme', t); },
     get: function () { return localStorage.getItem('maromba_tema') || 'light'; },
-    set: function (t) { localStorage.setItem('maromba_tema', t); Util.tema.aplicar(t); }
+    set: function (t) { localStorage.setItem('maromba_tema', t); Util.tema.aplicar(t); document.dispatchEvent(new Event('tema:mudou')); }
   }
 };
 Util.tema.aplicar(Util.tema.get());

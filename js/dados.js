@@ -1,6 +1,6 @@
 /* Dados: cache local (Dexie) + sincronização com o Supabase + cálculos (ritmo, calorias, recordes). */
 var Dados = {
-  ex: [], exMap: {}, sessoes: [], _sync: null, ultimoErro: null,
+  ex: [], exMap: {}, sessoes: [], pesagens: [], seqServidor: null, _sync: null, ultimoErro: null,
   EQUIP: {
     nenhum: 'Sem equipamento', bicicleta_ergometrica: 'Bicicleta ergométrica', bicicleta: 'Bicicleta', halteres: 'Halteres',
     barra: 'Barra', elastico: 'Elástico', esteira: 'Esteira', banco: 'Banco', corda: 'Corda',
@@ -123,11 +123,17 @@ var Dados = {
     var ss = await Api.db.sessoes.toArray();
     Dados.sessoes = ss.filter(function (s) { return !s.excluido; })
       .sort(function (a, b) { return new Date(b.inicio) - new Date(a.inicio); });
+    var ps = await Api.db.pesagens.toArray();
+    Dados.pesagens = ps.filter(function (p) { return !p.excluido; }).sort(function (a, b) { return a.data < b.data ? -1 : 1; });
     await Dados.atualizarBadge();
     document.dispatchEvent(new Event('dados:atualizados'));
   },
 
-  pendentes: function () { return Api.db.sessoes.where('pendente').equals(1).count(); },
+  pendentes: async function () {
+    var a = await Api.db.sessoes.where('pendente').equals(1).count();
+    var b = await Api.db.pesagens.where('pendente').equals(1).count();
+    return a + b;
+  },
   atualizarBadge: async function () {
     var n = 0; try { n = await Dados.pendentes(); } catch (e) {}
     document.querySelectorAll('[data-sync-badge]').forEach(function (el) {
@@ -192,6 +198,20 @@ var Dados = {
       if (s.excluido) await Api.db.sessoes.delete(s.id);
       else await Api.db.sessoes.update(s.id, { pendente: 0 });
     }
+    // 1b) enviar pesagens pendentes
+    var pp = await Api.db.pesagens.where('pendente').equals(1).toArray();
+    for (var q = 0; q < pp.length; q++) {
+      var p = pp[q];
+      var rp = p.excluido
+        ? await Supa.client.from('pesagens').delete().eq('data', p.data)
+        : await Supa.client.from('pesagens').upsert({ user_id: Util.userId, data: p.data, peso_kg: p.peso_kg }, { onConflict: 'user_id,data' });
+      if (rp.error) {
+        if (!rp.error.code) throw new Error('Sem conexão com o servidor');
+        Dados.ultimoErro = 'Uma pesagem foi recusada pelo servidor: ' + rp.error.message;
+        continue;
+      }
+      if (p.excluido) await Api.db.pesagens.delete(p.data); else await Api.db.pesagens.update(p.data, { pendente: 0 });
+    }
     // 2) baixar catálogo e treinos
     var re = await Supa.client.from('exercicios').select('*').order('nome');
     if (re.error) throw re.error;
@@ -218,8 +238,33 @@ var Dados = {
     for (var m = 0; m < todas.length; m++) {
       if (!todas[m].pendente && !vistos[todas[m].id]) await Api.db.sessoes.delete(todas[m].id); // apagada em outro aparelho
     }
+    var rpes = await Supa.client.from('pesagens').select('data,peso_kg').order('data');
+    if (rpes.error) throw rpes.error;
+    var locaisP = await Api.db.pesagens.toArray(), vp = {};
+    for (var z = 0; z < rpes.data.length; z++) {
+      vp[rpes.data[z].data] = true;
+      var lp = await Api.db.pesagens.get(rpes.data[z].data);
+      if (!lp || !lp.pendente) await Api.db.pesagens.put({ data: rpes.data[z].data, peso_kg: Number(rpes.data[z].peso_kg), pendente: 0 });
+    }
+    for (var y = 0; y < locaisP.length; y++) if (!locaisP[y].pendente && !vp[locaisP[y].data]) await Api.db.pesagens.delete(locaisP[y].data);
+
+    // sequência de dias calculada no banco (data de São Paulo); só vale quando não há nada pendente
+    if (!(await Dados.pendentes())) {
+      var rq = await Supa.client.rpc('sequencia_dias');
+      if (!rq.error && rq.data && rq.data[0]) Dados.seqServidor = { atual: rq.data[0].atual, maior: rq.data[0].maior, dia: Dados.tzData(Date.now()) };
+    }
     await Dados.carregarLocal();
     return true;
+  },
+
+  /* ---------- pesagens (peso corporal) ---------- */
+  salvarPesagem: async function (data, kg) {
+    await Api.db.pesagens.put({ data: data, peso_kg: kg, pendente: 1 });
+    await Dados.carregarLocal(); Dados.sincronizar();
+  },
+  excluirPesagem: async function (data) {
+    await Api.db.pesagens.put({ data: data, peso_kg: 0, pendente: 1, excluido: 1 });
+    await Dados.carregarLocal(); Dados.sincronizar();
   },
 
   iniciar: async function () {

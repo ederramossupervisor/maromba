@@ -8,6 +8,12 @@ var Api = {
       exercicios: 'id',
       sessoes: 'id,data,inicio,pendente'
     });
+    Api.db.version(3).stores({
+      configuracoes: 'chave',
+      exercicios: 'id',
+      sessoes: 'id,data,inicio,pendente',
+      pesagens: 'data,pendente'
+    });
     return Api.db;
   },
   rpc: async function (nome, args) {

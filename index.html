@@ -91,15 +91,25 @@
 
       <section class="pagina" data-pagina="inicio">
         <h1 class="h4 mb-3">Início</h1>
-        <div class="card"><div class="card-body">
-          <p class="fw-semibold mb-2">Pronto para treinar?</p>
-          <div class="d-flex flex-wrap gap-2">
-            <a class="btn btn-primary" href="#registrar"><i class="fa-solid fa-dumbbell me-1"></i>Registrar treino</a>
-            <button type="button" class="btn btn-outline-primary" id="btnRepetirInicio"><i class="fa-solid fa-rotate-right me-1"></i>Repetir último treino</button>
-            <a class="btn btn-outline-secondary" href="#historico">Ver histórico</a>
-          </div>
-          <p class="small text-body-secondary mt-3 mb-0">O painel com resumo, sequência e gráficos chega na próxima etapa.</p>
+        <div class="row g-3 mb-3">
+          <div class="col-12 col-md-4"><div class="card h-100"><div class="card-body">
+            <div class="small text-body-secondary">Sequência atual</div>
+            <div><span class="painel-num" id="pnSeqAtual">0</span> <span class="small text-body-secondary" id="pnSeqTxt"></span></div>
+            <div class="dias-semana mt-2" id="pnSemanaDias" aria-label="Últimos 7 dias"></div>
+          </div></div></div>
+          <div class="col-4 col-md-2"><div class="card h-100"><div class="card-body"><div class="small text-body-secondary">Hoje</div><div class="fw-semibold" id="pnHoje">—</div></div></div></div>
+          <div class="col-4 col-md-3"><div class="card h-100"><div class="card-body"><div class="small text-body-secondary">Esta semana</div><div class="fw-semibold" id="pnSemana">—</div></div></div></div>
+          <div class="col-4 col-md-3"><div class="card h-100"><div class="card-body"><div class="small text-body-secondary">Este mês</div><div class="fw-semibold" id="pnMes">—</div></div></div></div>
+        </div>
+        <div class="card mb-3"><div class="card-body">
+          <h2 class="h6">Último treino</h2>
+          <div id="pnUltimo"></div>
         </div></div>
+        <div class="d-flex flex-wrap gap-2">
+          <a class="btn btn-primary" href="#registrar"><i class="fa-solid fa-dumbbell me-1"></i>Iniciar treino</a>
+          <button type="button" class="btn btn-outline-primary" id="btnRepetirInicio"><i class="fa-solid fa-rotate-right me-1"></i>Repetir último treino</button>
+          <a class="btn btn-outline-secondary" href="#estatisticas">Ver estatísticas</a>
+        </div>
       </section>
 
       <section class="pagina d-none" data-pagina="registrar">
@@ -183,6 +193,87 @@
         </div></div>
         <div id="hResumo" class="small text-body-secondary mb-2"></div>
         <div id="hLista"></div>
+      </section>
+
+      <section class="pagina d-none" data-pagina="estatisticas">
+        <h1 class="h4 mb-3">Estatísticas</h1>
+        <div class="card mb-3"><div class="card-body"><div class="row g-2">
+          <div class="col-6 col-md-3"><label class="form-label small mb-1" for="stPeriodo">Período</label>
+            <select id="stPeriodo" class="form-select"><option value="7">Últimos 7 dias</option><option value="30" selected>Últimos 30 dias</option><option value="90">Últimos 90 dias</option><option value="365">Último ano</option><option value="todos">Tudo</option><option value="custom">Personalizado</option></select></div>
+          <div class="col-6 col-md-4"><label class="form-label small mb-1" for="stExercicio">Exercício</label><select id="stExercicio" class="form-select"><option value="">Todos os exercícios</option></select></div>
+          <div class="col-12 small text-body-secondary">Ao filtrar por um exercício sem tempo próprio (como flexões), o tempo do treino é dividido entre os exercícios sem tempo.</div>
+          <div class="col-12 d-none" id="boxStPers"><div class="row g-2">
+            <div class="col-6"><label class="form-label small mb-1" for="stDe">De</label><input id="stDe" type="date" class="form-control"></div>
+            <div class="col-6"><label class="form-label small mb-1" for="stAte">Até</label><input id="stAte" type="date" class="form-control"></div></div></div>
+        </div></div></div>
+
+        <div class="card mb-3"><div class="card-body">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2"><h2 class="h6 mb-0">Minutos ativos</h2>
+            <select id="stGran" class="form-select form-select-sm w-auto" aria-label="Agrupar por"><option value="dia">Por dia</option><option value="semana" selected>Por semana</option><option value="mes">Por mês</option></select></div>
+          <div class="small text-body-secondary mb-2" id="stResumoMin"></div>
+          <div class="chart-box"><canvas id="cvMinutos"></canvas></div><div id="cvMinutosVazio" class="small text-body-secondary d-none">Sem dados para este filtro.</div>
+        </div></div>
+
+        <div class="card mb-3"><div class="card-body"><h2 class="h6">Treinos por semana</h2><div class="chart-box"><canvas id="cvSessSem"></canvas></div><div id="cvSessSemVazio" class="small text-body-secondary d-none">Sem dados para este filtro.</div></div></div>
+
+        <div class="card mb-3"><div class="card-body"><h2 class="h6">Dias treinados</h2>
+          <div class="heat-wrap"><div class="heat" id="stHeat"></div></div>
+          <div class="d-flex justify-content-between align-items-center mt-2 flex-wrap gap-2">
+            <span class="small text-body-secondary" id="stHeatTxt"></span>
+            <span class="small text-body-secondary heat-leg">menos <span class="heat-cel heat-0"></span><span class="heat-cel heat-1"></span><span class="heat-cel heat-2"></span><span class="heat-cel heat-3"></span><span class="heat-cel heat-4"></span> mais</span></div>
+        </div></div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-12 col-md-6"><div class="card h-100"><div class="card-body"><h2 class="h6">Exercícios por categoria</h2><div class="chart-box"><canvas id="cvCategoria"></canvas></div><div id="cvCategoriaVazio" class="small text-body-secondary d-none">Sem dados para este filtro.</div></div></div></div>
+          <div class="col-12 col-md-6"><div class="card h-100"><div class="card-body"><h2 class="h6">Treinos por ambiente</h2><div class="chart-box"><canvas id="cvAmbiente"></canvas></div><div id="cvAmbienteVazio" class="small text-body-secondary d-none">Sem dados para este filtro.</div></div></div></div>
+        </div>
+
+        <div class="card mb-3"><div class="card-body">
+          <h2 class="h6">Evolução por exercício</h2>
+          <div class="row g-2 mb-2">
+            <div class="col-12 col-md-6"><select id="stExEvo" class="form-select" aria-label="Exercício"></select></div>
+            <div class="col-12 col-md-6"><select id="stMetrica" class="form-select" aria-label="Medida"></select></div></div>
+          <div class="chart-box"><canvas id="cvEvolucao"></canvas></div><div id="cvEvolucaoVazio" class="small text-body-secondary d-none">Sem dados para este filtro.</div>
+        </div></div>
+
+        <div class="card mb-3 d-none" id="secBike"><div class="card-body">
+          <h2 class="h6">Bicicleta ergométrica</h2>
+          <div class="small text-body-secondary mb-1">Minutos e distância por sessão</div><div class="chart-box"><canvas id="cvBikeA"></canvas></div><div id="cvBikeAVazio" class="small text-body-secondary d-none">Sem dados para este filtro.</div>
+          <div class="small text-body-secondary mt-3 mb-1">Resistência e cadência médias</div><div class="chart-box"><canvas id="cvBikeB"></canvas></div><div id="cvBikeBVazio" class="small text-body-secondary d-none">Sem dados para este filtro.</div>
+        </div></div>
+
+        <div class="card mb-3"><div class="card-body">
+          <h2 class="h6">Constância</h2>
+          <div class="row text-center mb-2">
+            <div class="col-6"><div class="painel-num" id="stSeqAtual">0</div><div class="small text-body-secondary">sequência atual (dias)</div></div>
+            <div class="col-6"><div class="painel-num" id="stSeqMaior">0</div><div class="small text-body-secondary">maior sequência (dias)</div></div></div>
+          <p class="mb-1" id="stMelhorDia"></p><p class="mb-3" id="stMelhorHora"></p>
+          <div class="row g-3"><div class="col-12 col-md-6"><div class="chart-box"><canvas id="cvDiaSemana"></canvas></div><div id="cvDiaSemanaVazio" class="small text-body-secondary d-none">Sem dados para este filtro.</div></div><div class="col-12 col-md-6"><div class="chart-box"><canvas id="cvHorario"></canvas></div><div id="cvHorarioVazio" class="small text-body-secondary d-none">Sem dados para este filtro.</div></div></div>
+        </div></div>
+
+        <div class="card mb-3"><div class="card-body">
+          <h2 class="h6">Esforço e humor</h2><div class="chart-box"><canvas id="cvEsforco"></canvas></div><div id="cvEsforcoVazio" class="small text-body-secondary d-none">Sem dados para este filtro.</div>
+          <div class="small text-body-secondary mt-3 mb-1" id="stHumorTxt"></div><div class="chart-box"><canvas id="cvHumorDur"></canvas></div><div id="cvHumorDurVazio" class="small text-body-secondary d-none">Sem dados para este filtro.</div>
+        </div></div>
+
+        <div class="card mb-3"><div class="card-body">
+          <h2 class="h6">Peso corporal</h2>
+          <form id="frmPeso" class="row g-2 align-items-end mb-3" novalidate>
+            <div class="col-5"><label class="form-label small mb-1" for="pgData">Data</label><input id="pgData" type="date" class="form-control"></div>
+            <div class="col-4"><label class="form-label small mb-1" for="pgKg">Peso (kg)</label><input id="pgKg" type="number" step="0.1" min="1" max="499" inputmode="decimal" class="form-control"></div>
+            <div class="col-3"><button class="btn btn-primary w-100" type="submit">Salvar</button></div></form>
+          <div class="chart-box"><canvas id="cvPeso"></canvas></div><div id="cvPesoVazio" class="small text-body-secondary d-none">Sem dados para este filtro.</div>
+          <div class="list-group list-group-flush mt-2" id="listaPeso"></div>
+          <p class="small text-body-secondary mt-2 mb-0">O peso do perfil (em Configurações) é o que entra no cálculo de calorias.</p>
+        </div></div>
+
+        <div class="card mb-3"><div class="card-body"><h2 class="h6">Recordes pessoais</h2><div class="list-group list-group-flush" id="stRecordes"></div></div></div>
+
+        <div class="card mb-3"><div class="card-body">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2"><h2 class="h6 mb-0">Retrospectiva</h2>
+            <select id="stRetro" class="form-select form-select-sm w-auto" aria-label="Período da retrospectiva"><option value="mes_atual">Este mês</option><option value="mes_anterior">Mês passado</option><option value="ano_atual">Este ano</option><option value="ano_anterior">Ano passado</option></select></div>
+          <div id="stRetroConteudo"></div>
+        </div></div>
       </section>
 
       <section class="pagina d-none" data-pagina="config">
@@ -329,6 +420,7 @@
 <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toasts"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dexie@3.2.7/dist/dexie.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="js/supabase-client.js"></script>
@@ -337,6 +429,8 @@
 <script src="js/dados.js"></script>
 <script src="js/perfil.js"></script>
 <script src="js/treino.js"></script>
+<script src="js/estatisticas.js"></script>
+<script src="js/inicio.js"></script>
 <script src="js/historico.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/app.js"></script>

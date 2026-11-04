@@ -42,3 +42,16 @@ a{ color:#0f7c86; }
 .btn-group .btn.active{ background:#0f7c86; border-color:#0f7c86; color:#fff; }
 .flex-none{ flex:none; }
 #modalExercicio .list-group-item{ background:transparent; }
+
+.painel-num{ font-family:"Barlow Condensed",system-ui,sans-serif; font-size:2.6rem; font-weight:600; line-height:1; }
+.dias-semana{ display:flex; gap:6px; }
+.dia-ponto{ width:30px; height:30px; border-radius:50%; border:2px solid rgba(128,128,128,.4); display:inline-flex; align-items:center; justify-content:center; font-size:.75rem; }
+.dia-ponto.on{ background:#0f7c86; border-color:#0f7c86; color:#fff; }
+.chart-box{ position:relative; height:240px; }
+.heat-wrap{ overflow-x:auto; padding-bottom:4px; }
+.heat{ display:grid; grid-auto-flow:column; grid-template-rows:repeat(7,13px); gap:3px; width:max-content; }
+.heat-cel{ width:13px; height:13px; border-radius:3px; display:inline-block; background:rgba(128,128,128,.18); }
+.heat-1{ background:#9fd3d6; } .heat-2{ background:#5fb4ba; } .heat-3{ background:#2a959d; } .heat-4{ background:#0b5f67; }
+.heat-fut{ background:transparent; }
+.heat-leg .heat-cel{ margin:0 1px; vertical-align:middle; }
+.retro-num{ font-family:"Barlow Condensed",system-ui,sans-serif; font-size:2rem; font-weight:600; line-height:1.1; }
