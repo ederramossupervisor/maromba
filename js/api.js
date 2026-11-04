@@ -14,6 +14,14 @@ var Api = {
       sessoes: 'id,data,inicio,pendente',
       pesagens: 'data,pendente'
     });
+    Api.db.version(4).stores({
+      configuracoes: 'chave,pendente',
+      exercicios: 'id',
+      sessoes: 'id,data,inicio,pendente',
+      pesagens: 'data,pendente',
+      metas: 'id',
+      metas_progresso: 'id,meta_id'
+    });
     return Api.db;
   },
   rpc: async function (nome, args) {

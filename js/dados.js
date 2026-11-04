@@ -1,6 +1,6 @@
 /* Dados: cache local (Dexie) + sincronização com o Supabase + cálculos (ritmo, calorias, recordes). */
 var Dados = {
-  ex: [], exMap: {}, sessoes: [], pesagens: [], seqServidor: null, _sync: null, ultimoErro: null,
+  ex: [], exMap: {}, sessoes: [], pesagens: [], config: {}, metas: [], metasProg: [], seqServidor: null, _sync: null, ultimoErro: null,
   EQUIP: {
     nenhum: 'Sem equipamento', bicicleta_ergometrica: 'Bicicleta ergométrica', bicicleta: 'Bicicleta', halteres: 'Halteres',
     barra: 'Barra', elastico: 'Elástico', esteira: 'Esteira', banco: 'Banco', corda: 'Corda',
@@ -125,6 +125,10 @@ var Dados = {
       .sort(function (a, b) { return new Date(b.inicio) - new Date(a.inicio); });
     var ps = await Api.db.pesagens.toArray();
     Dados.pesagens = ps.filter(function (p) { return !p.excluido; }).sort(function (a, b) { return a.data < b.data ? -1 : 1; });
+    var cf = await Api.db.configuracoes.toArray(); Dados.config = {};
+    cf.forEach(function (c) { Dados.config[c.chave] = c.valor; });
+    Dados.metas = (await Api.db.metas.toArray()).sort(function (a, b) { return new Date(a.criada_em) - new Date(b.criada_em); });
+    Dados.metasProg = await Api.db.metas_progresso.toArray();
     await Dados.atualizarBadge();
     document.dispatchEvent(new Event('dados:atualizados'));
   },
@@ -132,7 +136,14 @@ var Dados = {
   pendentes: async function () {
     var a = await Api.db.sessoes.where('pendente').equals(1).count();
     var b = await Api.db.pesagens.where('pendente').equals(1).count();
-    return a + b;
+    var c = await Api.db.configuracoes.where('pendente').equals(1).count();
+    return a + b + c;
+  },
+
+  /* Dias da semana de descanso planejado (0 = domingo ... 6 = sábado). */
+  descanso: function () {
+    var v = Dados.config.dias_descanso;
+    return Array.isArray(v) ? v.filter(function (n) { return n >= 0 && n <= 6; }) : [];
   },
   atualizarBadge: async function () {
     var n = 0; try { n = await Dados.pendentes(); } catch (e) {}
@@ -212,6 +223,16 @@ var Dados = {
       }
       if (p.excluido) await Api.db.pesagens.delete(p.data); else await Api.db.pesagens.update(p.data, { pendente: 0 });
     }
+    // 1c) enviar configurações pendentes
+    var cp = await Api.db.configuracoes.where('pendente').equals(1).toArray();
+    for (var c1 = 0; c1 < cp.length; c1++) {
+      var rc = await Supa.client.from('configuracoes').upsert({ user_id: Util.userId, chave: cp[c1].chave, valor: cp[c1].valor, atualizado_em: new Date().toISOString() }, { onConflict: 'user_id,chave' });
+      if (rc.error) {
+        if (!rc.error.code) throw new Error('Sem conexão com o servidor');
+        Dados.ultimoErro = 'Uma configuração foi recusada pelo servidor: ' + rc.error.message; continue;
+      }
+      await Api.db.configuracoes.update(cp[c1].chave, { pendente: 0 });
+    }
     // 2) baixar catálogo e treinos
     var re = await Supa.client.from('exercicios').select('*').order('nome');
     if (re.error) throw re.error;
@@ -248,6 +269,23 @@ var Dados = {
     }
     for (var y = 0; y < locaisP.length; y++) if (!locaisP[y].pendente && !vp[locaisP[y].data]) await Api.db.pesagens.delete(locaisP[y].data);
 
+    // configurações, metas e períodos cumpridos
+    var rcf = await Supa.client.from('configuracoes').select('chave,valor');
+    if (rcf.error) throw rcf.error;
+    var vc = {}, locC = await Api.db.configuracoes.toArray();
+    for (var c2 = 0; c2 < rcf.data.length; c2++) {
+      vc[rcf.data[c2].chave] = true;
+      var lc = await Api.db.configuracoes.get(rcf.data[c2].chave);
+      if (!lc || !lc.pendente) await Api.db.configuracoes.put({ chave: rcf.data[c2].chave, valor: rcf.data[c2].valor, pendente: 0 });
+    }
+    for (var c3 = 0; c3 < locC.length; c3++) if (!locC[c3].pendente && !vc[locC[c3].chave]) await Api.db.configuracoes.delete(locC[c3].chave);
+    var rm = await Supa.client.from('metas').select('*').order('criada_em');
+    if (rm.error) throw rm.error;
+    await Api.db.metas.clear(); await Api.db.metas.bulkPut(rm.data);
+    var rmp = await Supa.client.from('metas_progresso').select('*').range(0, 4999);
+    if (rmp.error) throw rmp.error;
+    await Api.db.metas_progresso.clear(); await Api.db.metas_progresso.bulkPut(rmp.data);
+
     // sequência de dias calculada no banco (data de São Paulo); só vale quando não há nada pendente
     if (!(await Dados.pendentes())) {
       var rq = await Supa.client.rpc('sequencia_dias');
@@ -265,6 +303,44 @@ var Dados = {
   excluirPesagem: async function (data) {
     await Api.db.pesagens.put({ data: data, peso_kg: 0, pendente: 1, excluido: 1 });
     await Dados.carregarLocal(); Dados.sincronizar();
+  },
+
+  /* ---------- descanso, metas (escritas de metas exigem internet) ---------- */
+  salvarDescanso: async function (dias) {
+    await Api.db.configuracoes.put({ chave: 'dias_descanso', valor: dias.slice().sort(), pendente: 1 });
+    Dados.seqServidor = null; // será recalculada no banco após sincronizar
+    await Dados.carregarLocal(); Dados.sincronizar();
+  },
+  _online: function () { if (!navigator.onLine) throw new Error('Sem internet: conecte-se para alterar metas.'); },
+  criarMeta: async function (campos) {
+    Dados._online();
+    var r = await Supa.client.from('metas').insert(campos).select().single();
+    if (r.error) throw r.error;
+    await Api.db.metas.put(r.data); await Dados.carregarLocal();
+    return r.data;
+  },
+  atualizarMeta: async function (id, campos) {
+    Dados._online();
+    var r = await Supa.client.from('metas').update(campos).eq('id', id).select().single();
+    if (r.error) throw r.error;
+    await Api.db.metas.put(r.data); await Dados.carregarLocal();
+  },
+  excluirMeta: async function (id) {
+    Dados._online();
+    var r = await Supa.client.from('metas').delete().eq('id', id);
+    if (r.error) throw r.error;
+    await Api.db.metas.delete(id);
+    await Api.db.metas_progresso.where('meta_id').equals(id).delete();
+    await Dados.carregarLocal();
+  },
+  /* Retorna true se este aparelho registrou o período (e deve comemorar); false se já estava registrado. */
+  registrarProgresso: async function (linha) {
+    if (!navigator.onLine) return false;
+    var r = await Supa.client.from('metas_progresso').insert(linha).select().single();
+    if (r.error) { if (r.error.code === '23505') return false; throw r.error; }
+    await Api.db.metas_progresso.put(r.data);
+    Dados.metasProg.push(r.data);
+    return true;
   },
 
   iniciar: async function () {

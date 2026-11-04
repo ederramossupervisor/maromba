@@ -102,6 +102,11 @@
           <div class="col-4 col-md-3"><div class="card h-100"><div class="card-body"><div class="small text-body-secondary">Este mês</div><div class="fw-semibold" id="pnMes">—</div></div></div></div>
         </div>
         <div class="card mb-3"><div class="card-body">
+          <div class="d-flex justify-content-between align-items-center"><h2 class="h6 mb-2">Meta em andamento</h2><a href="#metas" class="small">Ver metas</a></div>
+          <div id="pnMeta"></div>
+          <div id="pnDescanso" class="small mt-2 d-none">🌿 Hoje é seu dia de descanso planejado. Sua sequência continua.</div>
+        </div></div>
+        <div class="card mb-3"><div class="card-body">
           <h2 class="h6">Último treino</h2>
           <div id="pnUltimo"></div>
         </div></div>
@@ -276,6 +281,41 @@
         </div></div>
       </section>
 
+      <section class="pagina d-none" data-pagina="metas" id="pagMetas">
+        <div class="d-flex justify-content-between align-items-center mb-3"><h1 class="h4 mb-0">Metas</h1>
+          <button type="button" class="btn btn-primary" id="btnNovaMeta"><i class="fa-solid fa-plus me-1"></i>Nova meta</button></div>
+        <div id="pagMetasLista"></div>
+
+        <div class="card mb-3"><div class="card-body">
+          <h2 class="h6">Atalhos para começar</h2>
+          <div class="d-flex flex-wrap gap-2">
+            <button type="button" class="btn btn-sm btn-outline-primary" data-atalho="oms">150 min por semana</button>
+            <button type="button" class="btn btn-sm btn-outline-primary" data-atalho="treinos4">4 treinos por semana</button>
+            <button type="button" class="btn btn-sm btn-outline-primary" data-atalho="seq21">21 dias seguidos</button>
+            <button type="button" class="btn btn-sm btn-outline-primary" data-atalho="bike3">Bicicleta: 3 sessões de 30 min</button>
+            <button type="button" class="btn btn-sm btn-outline-primary" data-atalho="bike100">Bicicleta: 100 km no mês</button>
+            <button type="button" class="btn btn-sm btn-outline-primary" data-atalho="flex1000">1.000 flexões no mês</button>
+          </div>
+        </div></div>
+
+        <div class="card mb-3"><div class="card-body">
+          <h2 class="h6">Dias de descanso planejados</h2>
+          <p class="small text-body-secondary">Marque os dias da semana em que você descansa. Eles não quebram a sua sequência nem as metas de sequência.</p>
+          <div class="d-flex flex-wrap gap-3">
+            <div class="form-check"><input class="form-check-input" type="checkbox" data-descanso="1" id="dd1"><label class="form-check-label" for="dd1">Seg</label></div>
+            <div class="form-check"><input class="form-check-input" type="checkbox" data-descanso="2" id="dd2"><label class="form-check-label" for="dd2">Ter</label></div>
+            <div class="form-check"><input class="form-check-input" type="checkbox" data-descanso="3" id="dd3"><label class="form-check-label" for="dd3">Qua</label></div>
+            <div class="form-check"><input class="form-check-input" type="checkbox" data-descanso="4" id="dd4"><label class="form-check-label" for="dd4">Qui</label></div>
+            <div class="form-check"><input class="form-check-input" type="checkbox" data-descanso="5" id="dd5"><label class="form-check-label" for="dd5">Sex</label></div>
+            <div class="form-check"><input class="form-check-input" type="checkbox" data-descanso="6" id="dd6"><label class="form-check-label" for="dd6">Sáb</label></div>
+            <div class="form-check"><input class="form-check-input" type="checkbox" data-descanso="0" id="dd0"><label class="form-check-label" for="dd0">Dom</label></div>
+          </div>
+        </div></div>
+
+        <div class="card mb-3"><div class="card-body"><h2 class="h6">Histórico de metas</h2><div class="list-group list-group-flush" id="listaHistoricoMetas"></div></div></div>
+        <div class="card mb-3 d-none" id="boxEncerradas"><div class="card-body"><h2 class="h6">Metas encerradas</h2><div class="list-group list-group-flush" id="listaEncerradas"></div></div></div>
+      </section>
+
       <section class="pagina d-none" data-pagina="config">
         <h1 class="h4 mb-3">Configurações</h1>
 
@@ -417,6 +457,42 @@
   </div></div>
 </div>
 
+<div class="modal fade" id="modalMeta" tabindex="-1" aria-labelledby="tituloMeta" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-sm-down"><div class="modal-content">
+    <form id="frmMeta" novalidate>
+    <div class="modal-header"><h2 class="modal-title h5" id="tituloMeta">Nova meta</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button></div>
+    <div class="modal-body"><div class="row g-3">
+      <div class="col-12"><label class="form-label" for="mtTipo">Tipo de meta</label>
+        <select id="mtTipo" class="form-select"><option value="frequencia">Frequência (número de treinos)</option><option value="tempo" selected>Tempo ativo (minutos)</option><option value="distancia">Distância (km)</option><option value="repeticoes">Repetições acumuladas</option><option value="calorias">Calorias estimadas (kcal)</option><option value="sequencia">Sequência de dias</option><option value="marco">Marco de recorde</option></select></div>
+      <div class="col-12" id="boxMtPeriodo"><label class="form-label" for="mtPeriodo">Período</label>
+        <select id="mtPeriodo" class="form-select"><option value="dia">Por dia</option><option value="semana" selected>Por semana</option><option value="mes">Por mês</option><option value="ano">Por ano</option><option value="livre">Intervalo livre</option></select></div>
+      <div class="col-12 d-none" id="boxMtSeq"><label class="form-label" for="mtSeqModo">Tipo de sequência</label>
+        <select id="mtSeqModo" class="form-select"><option value="consecutivos">Treinar X dias seguidos</option><option value="max_intervalo">Nunca ficar mais de X dias sem treinar</option></select></div>
+      <div class="col-12 d-none" id="boxMtMetrica"><label class="form-label" for="mtMetrica">O que medir</label>
+        <select id="mtMetrica" class="form-select"><option value="reps">Repetições seguidas</option><option value="carga">Carga (kg)</option><option value="dist">Distância (km)</option><option value="tempo">Tempo (minutos)</option></select></div>
+      <div class="col-12 d-none" id="boxMtDatas"><div class="row g-2">
+        <div class="col-6"><label class="form-label" for="mtDataIni">De</label><input id="mtDataIni" type="date" class="form-control"></div>
+        <div class="col-6"><label class="form-label" for="mtDataFim">Até (opcional)</label><input id="mtDataFim" type="date" class="form-control"></div></div></div>
+      <div class="col-12"><label class="form-label" for="mtAlvo" id="mtAlvoRot">Valor da meta</label><input id="mtAlvo" type="number" min="0" step="any" inputmode="decimal" class="form-control"></div>
+      <div class="col-12 d-none" id="boxMtSugestao"><div class="alert alert-info py-2 small mb-0 d-flex justify-content-between align-items-center gap-2"><span id="mtSugestaoTxt"></span><button type="button" class="btn btn-sm btn-outline-primary flex-none" id="btnUsarSugestao">Usar</button></div></div>
+      <div class="col-12"><label class="form-label" for="mtExercicio" id="mtExercicioRot">Exercício (opcional)</label><select id="mtExercicio" class="form-select"></select></div>
+      <div class="col-6" id="boxMtCategoria"><label class="form-label" for="mtCategoria">Categoria</label><select id="mtCategoria" class="form-select"><option value="">Todas</option><option value="cardio">Cardio</option><option value="forca">Força</option><option value="mobilidade">Mobilidade</option><option value="esporte">Esportes</option></select></div>
+      <div class="col-6" id="boxMtAmbiente"><label class="form-label" for="mtAmbiente">Ambiente</label><select id="mtAmbiente" class="form-select"><option value="">Todos</option><option value="casa">Casa</option><option value="academia">Academia</option><option value="ar_livre">Ar livre</option></select></div>
+      <div class="col-12 d-none" id="boxMtMinSessao"><label class="form-label" for="mtMinSessao">Duração mínima de cada treino (minutos, opcional)</label><input id="mtMinSessao" type="number" min="1" max="1440" inputmode="numeric" class="form-control"></div>
+    </div></div>
+    <div class="modal-footer"><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="btn btn-primary" id="btnSalvarMeta">Criar meta</button></div>
+    </form>
+  </div></div>
+</div>
+
+<div class="modal fade" id="modalMetaCumprida" tabindex="-1" aria-labelledby="tituloMetaCumprida" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+    <div class="modal-header"><h2 class="modal-title h5" id="tituloMetaCumprida">🎉 Meta cumprida!</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button></div>
+    <div class="modal-body"><p class="mb-2">Parabéns pela constância! Você alcançou:</p><ul class="list-group" id="listaMetasCumpridas"></ul></div>
+    <div class="modal-footer"><button type="button" class="btn btn-primary" data-bs-dismiss="modal">Continuar</button></div>
+  </div></div>
+</div>
+
 <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toasts"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -430,6 +506,7 @@
 <script src="js/perfil.js"></script>
 <script src="js/treino.js"></script>
 <script src="js/estatisticas.js"></script>
+<script src="js/metas.js"></script>
 <script src="js/inicio.js"></script>
 <script src="js/historico.js"></script>
 <script src="js/auth.js"></script>

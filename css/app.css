@@ -55,3 +55,7 @@ a{ color:#0f7c86; }
 .heat-fut{ background:transparent; }
 .heat-leg .heat-cel{ margin:0 1px; vertical-align:middle; }
 .retro-num{ font-family:"Barlow Condensed",system-ui,sans-serif; font-size:2rem; font-weight:600; line-height:1.1; }
+
+.confete{ position:fixed; inset:0; pointer-events:none; z-index:3000; overflow:hidden; }
+.confete span{ position:absolute; top:-12px; width:9px; height:14px; border-radius:2px; opacity:.95; animation:cair linear forwards; }
+@keyframes cair{ to{ transform:translateY(105vh) rotate(720deg); opacity:.9; } }

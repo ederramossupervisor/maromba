@@ -1,5 +1,5 @@
 var Util = {
-  VERSAO: '3.0.0',
+  VERSAO: '4.0.0',
   userId: null,
   esc: function (s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -43,6 +43,19 @@ var Util = {
       m.addEventListener('hidden.bs.modal', onFim);
       inst.show();
     });
+  },
+  confete: function () {
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var cores = ['#0f7c86', '#f2a900', '#d6456b', '#6c8ea4', '#7a5ea8'], box = document.createElement('div');
+    box.className = 'confete'; box.setAttribute('aria-hidden', 'true');
+    for (var i = 0; i < 70; i++) {
+      var s = document.createElement('span');
+      s.style.left = Math.random() * 100 + '%'; s.style.background = cores[i % cores.length];
+      s.style.animationDelay = Math.random() * 0.6 + 's'; s.style.animationDuration = 2 + Math.random() * 1.5 + 's';
+      box.appendChild(s);
+    }
+    document.body.appendChild(box);
+    setTimeout(function () { box.remove(); }, 4500);
   },
   tema: {
     aplicar: function (t) { document.documentElement.setAttribute('data-bs-theme', t); },

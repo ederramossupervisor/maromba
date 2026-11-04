@@ -3,6 +3,7 @@ var App = {
     { id: 'inicio', nome: 'Início', icone: 'fa-house' },
     { id: 'registrar', nome: 'Registrar treino', icone: 'fa-dumbbell' },
     { id: 'historico', nome: 'Histórico', icone: 'fa-clock-rotate-left' },
+    { id: 'metas', nome: 'Metas', icone: 'fa-bullseye' },
     { id: 'estatisticas', nome: 'Estatísticas', icone: 'fa-chart-line' },
     { id: 'config', nome: 'Configurações', icone: 'fa-gear' }
   ],
@@ -25,6 +26,7 @@ var App = {
     if (id === 'registrar') Treino.aoAbrir();
     if (id === 'historico') Historico.aoAbrir();
     if (id === 'estatisticas') Estat.aoAbrir();
+    if (id === 'metas') Metas.aoAbrir();
     if (id === 'inicio') Inicio.aoAbrir();
   },
 
@@ -107,6 +109,7 @@ var App = {
     Treino.init();
     Historico.init();
     Estat.init();
+    Metas.init();
     Inicio.init();      // ligado na inicialização, não só ao abrir Configurações
     App.ligarConvites();
     var sw = document.getElementById('swEscuro');

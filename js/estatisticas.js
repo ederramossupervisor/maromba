@@ -54,17 +54,21 @@ var Estat = {
   },
 
   /* ---------- sequência de dias ---------- */
-  sequenciaLocal: function (sessoes) {
-    var set = {}, hoje = Estat.hoje();
+  /* Corridas de dias treinados. Dias de descanso planejados não quebram a sequência. */
+  corridas: function (dias, descanso, hoje) {
+    var cont = function (a, b) {
+      for (var x = Estat.addDias(a, 1); x < b; x = Estat.addDias(x, 1)) if (descanso.indexOf(Estat.dow(x)) < 0) return false;
+      return true;
+    };
+    var maior = 0, corrida = 0, ult = null;
+    dias.forEach(function (d) { corrida = (ult && cont(ult, d)) ? corrida + 1 : 1; if (corrida > maior) maior = corrida; ult = d; });
+    return { atual: ult ? (cont(ult, hoje) ? corrida : 0) : 0, maior: maior };
+  },
+  sequenciaLocal: function (sessoes, descanso) {
+    var set = {};
     sessoes.forEach(function (s) { set[Estat.dataDe(s)] = 1; });
-    var dias = Object.keys(set).sort(), maior = 0, corrida = 0, ult = null, atual = 0;
-    dias.forEach(function (d) {
-      corrida = (ult && Estat.dif(ult, d) === 1) ? corrida + 1 : 1;
-      if (corrida > maior) maior = corrida;
-      ult = d;
-      atual = (Estat.dif(d, hoje) <= 1) ? corrida : 0;
-    });
-    return { atual: dias.length ? atual : 0, maior: maior, total: dias.length };
+    var dias = Object.keys(set).sort(), r = Estat.corridas(dias, descanso || Dados.descanso(), Estat.hoje());
+    return { atual: r.atual, maior: r.maior, total: dias.length };
   },
   /* Usa o valor calculado no banco quando está atualizado (nada pendente); senão calcula com os dados do aparelho. */
   sequencia: async function () {
