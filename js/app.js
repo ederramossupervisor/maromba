@@ -1,15 +1,18 @@
 var App = {
   paginas: [
     { id: 'inicio', nome: 'Início', icone: 'fa-house' },
+    { id: 'modelos', nome: 'Treino guiado', icone: 'fa-play' },
     { id: 'registrar', nome: 'Registrar treino', icone: 'fa-dumbbell' },
     { id: 'historico', nome: 'Histórico', icone: 'fa-clock-rotate-left' },
     { id: 'metas', nome: 'Metas', icone: 'fa-bullseye' },
     { id: 'estatisticas', nome: 'Estatísticas', icone: 'fa-chart-line' },
+    { id: 'modelo', nome: 'Editar modelo', oculto: true },
+    { id: 'guiado', nome: 'Treino guiado', oculto: true },
     { id: 'config', nome: 'Configurações', icone: 'fa-gear' }
   ],
 
   montarMenu: function () {
-    var html = App.paginas.map(function (p) {
+    var html = App.paginas.filter(function (p) { return !p.oculto; }).map(function (p) {
       return '<a class="nav-link" href="#' + p.id + '" data-nav="' + p.id + '"><i class="fa-solid ' + p.icone + ' fa-fw"></i>' + Util.esc(p.nome) + '</a>';
     }).join('');
     document.querySelectorAll('[data-menu]').forEach(function (n) { n.innerHTML = html; });
@@ -27,6 +30,8 @@ var App = {
     if (id === 'historico') Historico.aoAbrir();
     if (id === 'estatisticas') Estat.aoAbrir();
     if (id === 'metas') Metas.aoAbrir();
+    if (id === 'modelos') Modelos.aoAbrir();
+    if (id === 'guiado') Guiado.aoAbrir();
     if (id === 'inicio') Inicio.aoAbrir();
   },
 
@@ -110,6 +115,8 @@ var App = {
     Historico.init();
     Estat.init();
     Metas.init();
+    Modelos.init();
+    Guiado.init();
     Inicio.init();      // ligado na inicialização, não só ao abrir Configurações
     App.ligarConvites();
     var sw = document.getElementById('swEscuro');
@@ -119,14 +126,6 @@ var App = {
       if (await Util.confirmar('Deseja sair da sua conta?', 'Sair')) Auth.sair();
     });
     window.addEventListener('hashchange', function () { if (Util.userId) App.ir(location.hash.replace('#', '')); });
-    // efeito de "ondinha" nos botões (mesmo do app de leitura)
-    document.addEventListener('click', function (ev) {
-      var b = ev.target.closest('.btn'); if (!b || b.disabled) return;
-      var r = b.getBoundingClientRect(), d = Math.max(r.width, r.height), s = document.createElement('span');
-      s.className = 'ripple'; s.style.width = s.style.height = d + 'px';
-      s.style.left = (ev.clientX - r.left - d / 2) + 'px'; s.style.top = (ev.clientY - r.top - d / 2) + 'px';
-      b.appendChild(s); setTimeout(function () { s.remove(); }, 600);
-    });
     App.registrarSW();
     Auth.init();
   }

@@ -22,6 +22,15 @@ var Api = {
       metas: 'id',
       metas_progresso: 'id,meta_id'
     });
+    Api.db.version(5).stores({
+      configuracoes: 'chave,pendente',
+      exercicios: 'id',
+      sessoes: 'id,data,inicio,pendente',
+      pesagens: 'data,pendente',
+      metas: 'id',
+      metas_progresso: 'id,meta_id',
+      modelos: 'id'
+    });
     return Api.db;
   },
   rpc: async function (nome, args) {

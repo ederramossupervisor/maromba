@@ -28,6 +28,7 @@ var Inicio = {
     $('pnSemanaDias').innerHTML = r.ultimos7.map(function (x) {
       return '<span class="dia-ponto' + (x.n ? ' on' : '') + '" title="' + Estat.brAno(x.d) + (x.n ? ': treinou' : ': sem treino') + '"><span class="dia-nome">' + Estat.DIA[Estat.dow(x.d)].charAt(0).toUpperCase() + '</span></span>';
     }).join('');
+    Guiado.atualizarBanners();
     var dest = Metas.destaque(), pm = $('pnMeta');
     if (dest) {
       pm.innerHTML = '<div class="fw-semibold">' + Util.esc(dest.m.titulo) + '</div><div class="progress my-2" role="progressbar" aria-label="Progresso da meta" aria-valuenow="' + dest.pct + '" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar' + (dest.cumprida ? ' bg-success' : '') + '" style="width:' + dest.pct + '%">' + dest.pct + '%</div></div><div class="small">' + Util.esc(Metas.texto(dest)) + '</div>';
@@ -38,7 +39,7 @@ var Inicio = {
     if (!u) { box.innerHTML = '<p class="text-body-secondary mb-0">Você ainda não registrou treinos. Toque em “Registrar treino” para começar.</p>'; return; }
     var itens = (u.itens || []).slice(0, 4).map(function (i) {
       var e = Dados.exMap[i.exercicio_id];
-      return '<li>' + (e ? Util.iconeEx(e) + ' ' + Util.esc(e.nome) : 'Exercício removido') + (Dados.resumoItem(i) ? ' <span class="text-body-secondary">— ' + Util.esc(Dados.resumoItem(i)) + '</span>' : '') + '</li>';
+      return '<li>' + (e ? Util.esc(e.icone) + ' ' + Util.esc(e.nome) : 'Exercício removido') + (Dados.resumoItem(i) ? ' <span class="text-body-secondary">— ' + Util.esc(Dados.resumoItem(i)) + '</span>' : '') + '</li>';
     }).join('');
     var mais = (u.itens || []).length > 4 ? '<li class="text-body-secondary">+ ' + ((u.itens || []).length - 4) + ' exercício(s)</li>' : '';
     box.innerHTML = '<div class="fw-semibold">' + Util.esc(Dados.fmtDataHora(u.inicio)) + '</div>' +
