@@ -3,7 +3,7 @@ var Estat = {
   charts: {},
   DIA: ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'],
   DIA_LONGO: ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado'],
-  COR: { p: '#0f7c86', a: '#f2a900', r: '#d6456b', c: '#6c8ea4', v: '#7a5ea8' },
+  COR: { p: '#5C6B5A', a: '#B79C6B', r: '#8B4A3D', c: '#8B7D6B', v: '#7A8B5E' },
   $: function (id) { return document.getElementById(id); },
 
   /* ---------- datas ---------- */

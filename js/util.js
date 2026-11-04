@@ -1,5 +1,5 @@
 var Util = {
-  VERSAO: '4.0.0',
+  VERSAO: '4.1.0',
   userId: null,
   esc: function (s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -46,7 +46,7 @@ var Util = {
   },
   confete: function () {
     if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    var cores = ['#0f7c86', '#f2a900', '#d6456b', '#6c8ea4', '#7a5ea8'], box = document.createElement('div');
+    var cores = ['#5C6B5A', '#B79C6B', '#8B4A3D', '#8B7D6B', '#7A8B5E'], box = document.createElement('div');
     box.className = 'confete'; box.setAttribute('aria-hidden', 'true');
     for (var i = 0; i < 70; i++) {
       var s = document.createElement('span');

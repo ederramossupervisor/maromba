@@ -119,6 +119,14 @@ var App = {
       if (await Util.confirmar('Deseja sair da sua conta?', 'Sair')) Auth.sair();
     });
     window.addEventListener('hashchange', function () { if (Util.userId) App.ir(location.hash.replace('#', '')); });
+    // efeito de "ondinha" nos botões (mesmo do app de leitura)
+    document.addEventListener('click', function (ev) {
+      var b = ev.target.closest('.btn'); if (!b || b.disabled) return;
+      var r = b.getBoundingClientRect(), d = Math.max(r.width, r.height), s = document.createElement('span');
+      s.className = 'ripple'; s.style.width = s.style.height = d + 'px';
+      s.style.left = (ev.clientX - r.left - d / 2) + 'px'; s.style.top = (ev.clientY - r.top - d / 2) + 'px';
+      b.appendChild(s); setTimeout(function () { s.remove(); }, 600);
+    });
     App.registrarSW();
     Auth.init();
   }

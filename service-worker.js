@@ -1,4 +1,4 @@
-const VERSAO = 'v4';
+const VERSAO = 'v5';
 const CACHE_APP = 'app-' + VERSAO;
 const CACHE_RT = 'app-runtime-' + VERSAO;
 const ARQUIVOS = [

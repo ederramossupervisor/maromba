@@ -31,7 +31,7 @@ var Perfil = {
         im.src = ic.slice(4);
         return;
       }
-      x.fillStyle = cor || '#0f7c86'; x.fillRect(0, 0, tam, tam);
+      x.fillStyle = cor || '#5C6B5A'; x.fillRect(0, 0, tam, tam);
       x.font = Math.round(tam * 0.62) + 'px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
       x.fillText(Perfil.iconeEmoji(ic), tam / 2, tam / 2 + tam * 0.04);
       resolve(c.toDataURL('image/png'));
@@ -40,7 +40,7 @@ var Perfil = {
 
   aplicar: async function () {
     var d = Perfil.dados || {};
-    var nome = d.nome_app || 'maromba', cor = d.cor || '#0f7c86', ic = d.icone || 'emoji:💪';
+    var nome = d.nome_app || 'maromba', cor = d.cor || '#5C6B5A', ic = d.icone || 'emoji:💪';
     document.title = nome;
     document.querySelectorAll('[data-app-nome]').forEach(function (e) { e.textContent = nome; });
     document.querySelectorAll('[data-app-icone]').forEach(function (e) { e.innerHTML = Perfil.iconeHtml(ic); });
@@ -58,7 +58,7 @@ var Perfil = {
     var d = Perfil.dados || {};
     document.getElementById('pfNome').value = d.nome_app || '';
     document.getElementById('pfEmoji').value = Perfil.iconeEhFoto(d.icone) ? '' : Perfil.iconeEmoji(d.icone);
-    document.getElementById('pfCor').value = d.cor || '#0f7c86';
+    document.getElementById('pfCor').value = d.cor || '#5C6B5A';
     document.getElementById('pfPeso').value = d.peso == null ? '' : d.peso;
     document.getElementById('pfAltura').value = d.altura == null ? '' : d.altura;
     document.getElementById('pfAno').value = d.ano_nascimento == null ? '' : d.ano_nascimento;
