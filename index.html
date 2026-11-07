@@ -4,12 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>maromba</title>
-  <meta name="theme-color" content="#0f7c86">
+  <meta name="theme-color" content="#5C6B5A">
   <link id="lnkManifest" rel="manifest" href="https://ycnktfqvjpqbxfvxafrz.supabase.co/functions/v1/app-manifest?b=https://ederramossupervisor.github.io/maromba/">
   <link id="lnkFavicon" rel="icon" type="image/png" href="img/icon-192.png">
   <link id="lnkApple" rel="apple-touch-icon" href="img/icon-192.png">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@500;600;700&display=swap" rel="stylesheet">
   <link href="css/app.css" rel="stylesheet">
 </head>
 <body>
@@ -91,10 +94,6 @@
 
       <section class="pagina" data-pagina="inicio">
         <h1 class="h4 mb-3">Início</h1>
-        <div class="alert alert-info d-none d-flex justify-content-between align-items-center flex-wrap gap-2" data-aviso-guiado>
-          <span>Treino em andamento: <strong data-aviso-guiado-nome></strong></span>
-          <span class="d-flex gap-2"><button type="button" class="btn btn-sm btn-primary" data-guiado-continuar>Continuar</button><button type="button" class="btn btn-sm btn-outline-secondary" data-guiado-descartar>Descartar</button></span>
-        </div>
         <div class="row g-3 mb-3">
           <div class="col-12 col-md-4"><div class="card h-100"><div class="card-body">
             <div class="small text-body-secondary">Sequência atual</div>
@@ -105,18 +104,21 @@
           <div class="col-4 col-md-3"><div class="card h-100"><div class="card-body"><div class="small text-body-secondary">Esta semana</div><div class="fw-semibold" id="pnSemana">—</div></div></div></div>
           <div class="col-4 col-md-3"><div class="card h-100"><div class="card-body"><div class="small text-body-secondary">Este mês</div><div class="fw-semibold" id="pnMes">—</div></div></div></div>
         </div>
+        <div class="row g-3 mb-3">
+          <div class="col-6"><a class="card h-100 text-decoration-none" href="#conquistas"><div class="card-body"><div class="small text-body-secondary">Nível</div><div class="fw-semibold" id="pnNivel">—</div><div class="progress mt-2" style="height:5px"><div class="progress-bar" id="pnNivelBarra" style="width:0%"></div></div></div></a></div>
+          <div class="col-6"><a class="card h-100 text-decoration-none" href="#bingo"><div class="card-body"><div class="small text-body-secondary">Bingo</div><div id="pnBingo">—</div></div></a></div>
+        </div>
         <div class="card mb-3"><div class="card-body">
           <div class="d-flex justify-content-between align-items-center"><h2 class="h6 mb-2">Meta em andamento</h2><a href="#metas" class="small">Ver metas</a></div>
           <div id="pnMeta"></div>
-          <div id="pnDescanso" class="small mt-2 d-none">🌿 Hoje é seu dia de descanso planejado. Sua sequência continua.</div>
+          <div id="pnDescanso" class="small mt-2 d-none"><i class="fa-solid fa-leaf me-1"></i>Hoje é seu dia de descanso planejado. Sua sequência continua.</div>
         </div></div>
         <div class="card mb-3"><div class="card-body">
           <h2 class="h6">Último treino</h2>
           <div id="pnUltimo"></div>
         </div></div>
         <div class="d-flex flex-wrap gap-2">
-          <a class="btn btn-primary" href="#modelos"><i class="fa-solid fa-play me-1"></i>Iniciar treino</a>
-          <a class="btn btn-outline-primary" href="#registrar"><i class="fa-solid fa-dumbbell me-1"></i>Registrar treino</a>
+          <a class="btn btn-primary" href="#registrar"><i class="fa-solid fa-dumbbell me-1"></i>Iniciar treino</a>
           <button type="button" class="btn btn-outline-primary" id="btnRepetirInicio"><i class="fa-solid fa-rotate-right me-1"></i>Repetir último treino</button>
           <a class="btn btn-outline-secondary" href="#estatisticas">Ver estatísticas</a>
         </div>
@@ -286,76 +288,42 @@
         </div></div>
       </section>
 
-      <section class="pagina d-none" data-pagina="modelos" id="pagModelos">
-        <div class="d-flex justify-content-between align-items-center mb-3"><h1 class="h4 mb-0">Modelos de treino</h1>
-          <button type="button" class="btn btn-primary" id="btnNovoModelo"><i class="fa-solid fa-plus me-1"></i>Novo modelo</button></div>
-        <div class="alert alert-info d-none d-flex justify-content-between align-items-center flex-wrap gap-2" data-aviso-guiado>
-          <span>Treino em andamento: <strong data-aviso-guiado-nome></strong></span>
-          <span class="d-flex gap-2"><button type="button" class="btn btn-sm btn-primary" data-guiado-continuar>Continuar</button><button type="button" class="btn btn-sm btn-outline-secondary" data-guiado-descartar>Descartar</button></span>
+      <section class="pagina d-none" data-pagina="bingo" id="pagBingo">
+        <div class="d-flex justify-content-between align-items-center mb-3 gap-2 flex-wrap">
+          <h1 class="h4 mb-0">Bingo</h1>
+          <button type="button" class="btn btn-primary btn-sm" id="btnNovaCartela"><i class="fa-solid fa-plus me-1"></i>Nova cartela</button>
         </div>
-        <h2 class="h6">Meus modelos</h2><div id="mdMeus" class="mb-3"></div>
-        <h2 class="h6">Modelos prontos (casa)</h2><div id="mdProntos"></div>
+        <div id="bgAviso" class="alert alert-warning py-2 small d-none"><i class="fa-solid fa-wifi me-1"></i>Sem internet: as casas automáticas continuam sendo calculadas e serão salvas quando você voltar a ficar online. Marcar, trocar e criar cartelas exigem internet.</div>
+        <div id="bgVazio" class="card d-none"><div class="card-body text-center">
+          <i class="fa-solid fa-table-cells fa-2x mb-2 text-body-secondary"></i>
+          <p class="mb-2" id="bgVazioTxt"></p>
+          <button type="button" class="btn btn-primary btn-sm" id="btnCriarAgora">Criar cartela do mês</button>
+        </div></div>
+        <div id="bgCorpo" class="d-none">
+          <select class="form-select mb-3" id="bgSelect" aria-label="Escolher cartela"></select>
+          <div class="card mb-3"><div class="card-body" id="bgResumo"></div></div>
+          <div class="bingo-grade" id="bgGrade"></div>
+          <p class="small text-body-secondary mt-3 mb-0"><i class="fa-solid fa-circle-info me-1"></i>Toque numa casa para ver os detalhes. Linha, coluna ou diagonal completa vale +50 pontos; cartela cheia, +300. Casas ainda não feitas podem ser trocadas (até 3 vezes por cartela).</p>
+        </div>
       </section>
 
-      <section class="pagina d-none" data-pagina="modelo">
-        <h1 class="h4 mb-3" id="mdTituloEd">Novo modelo</h1>
-        <form id="frmModelo" novalidate>
-          <div class="card mb-3"><div class="card-body"><div class="row g-3">
-            <div class="col-12 col-md-8"><label class="form-label" for="mdNome">Nome</label><input id="mdNome" class="form-control" maxlength="80" placeholder="Ex.: Treino A em casa – 20 min"></div>
-            <div class="col-12 col-md-4"><label class="form-label" for="mdAmbiente">Ambiente</label><select id="mdAmbiente" class="form-select"><option value="">—</option><option value="casa">Casa</option><option value="academia">Academia</option><option value="ar_livre">Ar livre</option></select></div>
-            <div class="col-12"><label class="form-label" for="mdDescricao">Descrição (opcional)</label><input id="mdDescricao" class="form-control" maxlength="300"></div>
-            <div class="col-12"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="mdCircuito"><label class="form-check-label" for="mdCircuito">Circuito: alternar os exercícios a cada rodada (as séries viram rodadas)</label></div></div>
-          </div></div></div>
-          <h2 class="h6">Exercícios</h2>
-          <div id="mdItens"></div>
-          <button type="button" id="btnAddExModelo" class="btn btn-outline-primary w-100 mb-2"><i class="fa-solid fa-plus me-1"></i>Adicionar exercício</button>
-          <div class="small text-body-secondary mb-3" id="mdEstimativa"></div>
-          <div class="d-flex gap-2"><button type="submit" id="btnSalvarModelo" class="btn btn-primary flex-grow-1">Salvar modelo</button><button type="button" id="btnCancelarModelo" class="btn btn-outline-secondary">Cancelar</button></div>
-        </form>
-      </section>
-
-      <section class="pagina d-none" data-pagina="guiado">
-        <div class="d-flex justify-content-between align-items-center mb-2 gap-2"><h1 class="h5 mb-0" id="gdTitulo"></h1>
-          <div class="d-flex gap-1"><button type="button" id="gdSom" class="btn btn-sm btn-outline-secondary" aria-label="Som" aria-pressed="true"><i class="fa-solid fa-volume-high"></i></button>
-          <button type="button" id="gdVib" class="btn btn-sm btn-outline-secondary" aria-label="Vibração" aria-pressed="true"><i class="fa-solid fa-mobile-screen"></i></button></div></div>
-        <div class="progress mb-1" role="progressbar" aria-label="Progresso do treino" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-bar" id="gdBarra" style="width:0%"></div></div>
-        <div class="small text-body-secondary mb-3" id="gdProgresso"></div>
-
-        <div id="gdAtivo"><div class="card"><div class="card-body">
-          <div class="gd-ex" id="gdExNome"></div><div class="text-body-secondary mb-2" id="gdMeta"></div>
-          <div id="gdBoxTempo" class="text-center my-3 d-none"><div id="gdContagem" class="crono-display">00:00</div>
-            <div class="d-flex justify-content-center gap-2"><button type="button" id="gdContIniciar" class="btn btn-outline-primary">Iniciar tempo</button><button type="button" id="gdContParar" class="btn btn-outline-secondary d-none">Pausar tempo</button></div></div>
-          <div class="row g-2">
-            <div class="col-6" id="gdBoxReps"><label class="form-label small mb-1" for="gdReps">Repetições feitas</label><input id="gdReps" type="number" min="0" inputmode="numeric" class="form-control form-control-lg"></div>
-            <div class="col-6" id="gdBoxCarga"><label class="form-label small mb-1" for="gdCarga">Carga (kg)</label><input id="gdCarga" type="number" min="0" step="0.5" inputmode="decimal" class="form-control form-control-lg"></div>
-            <div class="col-6" id="gdBoxKm"><label class="form-label small mb-1" for="gdKm">Distância (km)</label><input id="gdKm" type="number" min="0" step="0.01" inputmode="decimal" class="form-control"></div>
-            <div class="col-12" id="gdBoxBike"><div class="row g-2">
-              <div class="col-4"><label class="form-label small mb-1" for="gdRes">Resistência</label><input id="gdRes" type="number" min="1" max="20" inputmode="numeric" class="form-control"></div>
-              <div class="col-4"><label class="form-label small mb-1" for="gdCad">Cadência</label><input id="gdCad" type="number" min="0" max="300" inputmode="numeric" class="form-control"></div>
-              <div class="col-4"><label class="form-label small mb-1" for="gdKcal">kcal aparelho</label><input id="gdKcal" type="number" min="0" inputmode="numeric" class="form-control"></div></div></div>
+      <section class="pagina d-none" data-pagina="conquistas" id="pagConquistas">
+        <h1 class="h4 mb-3">Conquistas</h1>
+        <div class="card mb-3"><div class="card-body">
+          <div class="d-flex align-items-center gap-3">
+            <div class="nivel-circulo"><span id="cqNivelNum">1</span></div>
+            <div class="flex-grow-1">
+              <div class="small text-body-secondary">Seu nível</div>
+              <div class="fw-semibold fs-5" id="cqNivelTitulo">Iniciante</div>
+              <div class="progress my-1" role="progressbar" aria-label="Progresso para o próximo nível" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" id="cqXpBarra" style="width:0%"></div></div>
+              <div class="small text-body-secondary" id="cqXp"></div>
+            </div>
           </div>
-          <button type="button" id="gdConcluir" class="btn btn-primary btn-lg w-100 mt-3"><i class="fa-solid fa-check me-1"></i>Série concluída</button>
-          <div class="d-flex gap-2 mt-2"><button type="button" id="gdPular" class="btn btn-outline-secondary flex-grow-1">Pular este passo</button><button type="button" id="gdEncerrar" class="btn btn-outline-danger flex-grow-1">Encerrar treino</button></div>
-          <div class="small text-body-secondary mt-3" id="gdProximo"></div>
-        </div></div></div>
-
-        <div id="gdDescanso" class="d-none"><div class="card"><div class="card-body text-center">
-          <div class="text-body-secondary">Descanso</div><div id="gdDescTempo" class="crono-display">00:00</div><div id="gdDescProx" class="mb-3"></div>
-          <div class="d-flex justify-content-center gap-2 flex-wrap"><button type="button" id="gdMais15" class="btn btn-outline-secondary">+15 s</button><button type="button" id="gdPularDesc" class="btn btn-primary">Pular descanso</button></div>
-          <button type="button" id="gdEncerrar2" class="btn btn-link text-danger mt-3">Encerrar treino</button>
-        </div></div></div>
-
-        <div id="gdFim" class="d-none"><div class="card"><div class="card-body">
-          <h2 class="h5">Treino concluído 🎉</h2><div id="gdResumo" class="mb-3"></div>
-          <div id="gdSemRegistro" class="alert alert-warning d-none">Nenhuma série foi registrada. Você pode descartar este treino.</div>
-          <label class="form-label" for="gdRpe">Esforço percebido: <strong id="gdRpeTxt">não informado</strong></label>
-          <input id="gdRpe" type="range" min="1" max="10" step="1" value="5" class="form-range mb-2">
-          <span class="form-label d-block">Como você se sentiu depois?</span><div id="gdHumor" class="d-flex gap-2 mb-3"></div>
-          <div class="row g-2 mb-2"><div class="col-6"><label class="form-label small mb-1" for="gdLocal">Local</label><input id="gdLocal" class="form-control" list="listaLocais" maxlength="80"></div>
-            <div class="col-6"><label class="form-label small mb-1" for="gdAmbiente">Ambiente</label><select id="gdAmbiente" class="form-select"><option value="casa">Casa</option><option value="academia">Academia</option><option value="ar_livre">Ar livre</option></select></div></div>
-          <label class="form-label small mb-1" for="gdObs">Observações</label><textarea id="gdObs" class="form-control mb-3" rows="2" maxlength="500"></textarea>
-          <div class="d-flex gap-2"><button type="button" id="gdSalvar" class="btn btn-primary flex-grow-1">Salvar treino</button><button type="button" id="gdDescartar" class="btn btn-outline-danger">Descartar</button></div>
-        </div></div></div>
+          <div class="cq-resumo small mt-3" id="cqResumo"></div>
+        </div></div>
+        <div class="card mb-2"><div class="card-body py-2 small"><i class="fa-solid fa-sun me-2"></i><span id="cqMsg"></span></div></div>
+        <div id="cqMedalhas"></div>
+        <p class="small text-body-secondary mt-3">O nível sobe com seus minutos de treino, treinos registrados, pontos do bingo e medalhas.</p>
       </section>
 
       <section class="pagina d-none" data-pagina="metas" id="pagMetas">
@@ -404,13 +372,14 @@
                 <label class="form-label" for="pfNome">Nome do app</label>
                 <input id="pfNome" class="form-control" maxlength="45" placeholder="Ex.: Treino do João">
               </div>
-              <div class="col-8 col-md-4">
-                <label class="form-label" for="pfEmoji">Ícone (emoji)</label>
-                <input id="pfEmoji" class="form-control" maxlength="4" placeholder="💪">
+              <div class="col-12 col-md-6">
+                <label class="form-label" for="pfCor">Cor do ícone do app</label>
+                <input id="pfCor" type="color" class="form-control form-control-color w-100" value="#5C6B5A">
               </div>
-              <div class="col-4 col-md-2">
-                <label class="form-label" for="pfCor">Cor</label>
-                <input id="pfCor" type="color" class="form-control form-control-color w-100" value="#0f7c86">
+              <div class="col-12">
+                <span class="form-label d-block">Ícone</span>
+                <div id="pfIcones" class="grade-icones" role="group" aria-label="Escolha um ícone"></div>
+                <input id="pfEmoji" type="hidden" value="dumbbell">
               </div>
               <div class="col-12">
                 <label class="form-label" for="pfFoto">Ou use uma foto como ícone</label>
@@ -502,7 +471,7 @@
       <details class="mt-3"><summary class="fw-semibold">Criar meu próprio exercício</summary>
         <form id="frmNovoEx" class="row g-2 mt-1" novalidate>
           <div class="col-8"><label class="form-label small mb-1" for="nxNome">Nome</label><input id="nxNome" class="form-control" maxlength="80"></div>
-          <div class="col-4"><label class="form-label small mb-1" for="nxIcone">Ícone</label><input id="nxIcone" class="form-control" maxlength="4" placeholder="⭐"></div>
+          <div class="col-4"><label class="form-label small mb-1" for="nxIcone">Ícone</label><select id="nxIcone" class="form-select"></select></div>
           <div class="col-6"><label class="form-label small mb-1" for="nxCategoria">Categoria</label><select id="nxCategoria" class="form-select">
             <option value="cardio">Cardio</option><option value="forca" selected>Força</option><option value="mobilidade">Mobilidade</option><option value="esporte">Esportes</option><option value="outro">Outro</option></select></div>
           <div class="col-6"><label class="form-label small mb-1" for="nxModo">Como medir</label><select id="nxModo" class="form-select">
@@ -527,7 +496,7 @@
 
 <div class="modal fade" id="modalRecorde" tabindex="-1" aria-labelledby="tituloRecorde" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
-    <div class="modal-header"><h2 class="modal-title h5" id="tituloRecorde">🏆 Novo recorde pessoal!</h2>
+    <div class="modal-header"><h2 class="modal-title h5" id="tituloRecorde"><i class="fa-solid fa-trophy me-1"></i>Novo recorde pessoal!</h2>
       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button></div>
     <div class="modal-body"><p class="mb-2">Parabéns, você superou uma marca sua:</p><ul class="list-group" id="listaRecordes"></ul></div>
     <div class="modal-footer"><button type="button" class="btn btn-primary" data-bs-dismiss="modal">Continuar</button></div>
@@ -564,8 +533,36 @@
 
 <div class="modal fade" id="modalMetaCumprida" tabindex="-1" aria-labelledby="tituloMetaCumprida" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
-    <div class="modal-header"><h2 class="modal-title h5" id="tituloMetaCumprida">🎉 Meta cumprida!</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button></div>
+    <div class="modal-header"><h2 class="modal-title h5" id="tituloMetaCumprida"><i class="fa-solid fa-champagne-glasses me-1"></i>Meta cumprida!</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button></div>
     <div class="modal-body"><p class="mb-2">Parabéns pela constância! Você alcançou:</p><ul class="list-group" id="listaMetasCumpridas"></ul></div>
+    <div class="modal-footer"><button type="button" class="btn btn-primary" data-bs-dismiss="modal">Continuar</button></div>
+  </div></div>
+</div>
+
+<div class="modal fade" id="modalCasa" tabindex="-1" aria-labelledby="bcTitulo" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+    <div class="modal-header"><h2 class="modal-title h5" id="bcTitulo"></h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button></div>
+    <div class="modal-body"><div id="bcInfo"></div></div>
+    <div class="modal-footer flex-wrap justify-content-start gap-2" id="bcAcoes"></div>
+  </div></div>
+</div>
+
+<div class="modal fade" id="modalNovaCartela" tabindex="-1" aria-labelledby="tituloNovaCartela" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered"><form class="modal-content" id="frmNovaCartela">
+    <div class="modal-header"><h2 class="modal-title h5" id="tituloNovaCartela">Nova cartela</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button></div>
+    <div class="modal-body">
+      <div class="mb-3"><label class="form-label" for="ncTema">Tema</label><select class="form-select" id="ncTema"></select></div>
+      <div class="mb-3"><label class="form-label" for="ncNivel">Nível dos desafios</label><select class="form-select" id="ncNivel"></select><div class="form-text">Sugerimos o nível pelo seu volume dos últimos 30 dias.</div></div>
+      <div class="mb-0"><label class="form-label" for="ncTitulo">Nome (opcional)</label><input class="form-control" id="ncTitulo" maxlength="80"></div>
+    </div>
+    <div class="modal-footer"><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="btn btn-primary" id="btnCriarCartela">Sortear cartela</button></div>
+  </form></div>
+</div>
+
+<div class="modal fade" id="modalConquista" tabindex="-1" aria-labelledby="tituloConquista" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+    <div class="modal-header"><h2 class="modal-title h5" id="tituloConquista"><i class="fa-solid fa-medal me-1"></i>Parabéns!</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button></div>
+    <div class="modal-body"><ul class="list-group" id="listaConquista" style="max-height:50vh;overflow:auto"></ul></div>
     <div class="modal-footer"><button type="button" class="btn btn-primary" data-bs-dismiss="modal">Continuar</button></div>
   </div></div>
 </div>
@@ -584,8 +581,9 @@
 <script src="js/treino.js"></script>
 <script src="js/estatisticas.js"></script>
 <script src="js/metas.js"></script>
-<script src="js/modelos.js"></script>
-<script src="js/guiado.js"></script>
+<script src="js/bingo-dados.js"></script>
+<script src="js/bingo.js"></script>
+<script src="js/conquistas.js"></script>
 <script src="js/inicio.js"></script>
 <script src="js/historico.js"></script>
 <script src="js/auth.js"></script>

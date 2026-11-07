@@ -1,6 +1,6 @@
 /* Dados: cache local (Dexie) + sincronização com o Supabase + cálculos (ritmo, calorias, recordes). */
 var Dados = {
-  ex: [], exMap: {}, sessoes: [], pesagens: [], config: {}, metas: [], metasProg: [], modelos: [], seqServidor: null, _sync: null, ultimoErro: null,
+  ex: [], exMap: {}, sessoes: [], pesagens: [], config: {}, metas: [], metasProg: [], cartelas: [], casas: [], conquistas: [], bingoCarregado: false, seqServidor: null, _sync: null, ultimoErro: null,
   EQUIP: {
     nenhum: 'Sem equipamento', bicicleta_ergometrica: 'Bicicleta ergométrica', bicicleta: 'Bicicleta', halteres: 'Halteres',
     barra: 'Barra', elastico: 'Elástico', esteira: 'Esteira', banco: 'Banco', corda: 'Corda',
@@ -9,7 +9,6 @@ var Dados = {
   AMB: { casa: 'Casa', academia: 'Academia', ar_livre: 'Ar livre' },
   CAT: { cardio: 'Cardio', forca: 'Força', mobilidade: 'Mobilidade', esporte: 'Esportes', outro: 'Outro' },
   TIPO_TREINO: { leve: 'Leve', continuo: 'Contínuo', intervalado: 'Intervalado (HIIT)' },
-  HUMOR: ['😞', '😕', '😐', '🙂', '😄'],
 
   /* ---------- formatação ---------- */
   fmtNum: function (n, dec) {
@@ -109,7 +108,7 @@ var Dados = {
       var antes = prev.map(d.val).filter(function (v) { return v > 0; });
       if (!antes.length) return;
       var melhor = d.menor ? Math.min.apply(null, antes) : Math.max.apply(null, antes);
-      if (d.menor ? novo < melhor : novo > melhor) out.push({ exercicio: ex.nome, icone: ex.icone, rotulo: d.rot, valor: d.fmt(novo), anterior: d.fmt(melhor) });
+      if (d.menor ? novo < melhor : novo > melhor) out.push({ exercicio: ex.nome, iconeHtml: Util.iconeEx(ex), rotulo: d.rot, valor: d.fmt(novo), anterior: d.fmt(melhor) });
     });
     return out;
   },
@@ -129,7 +128,9 @@ var Dados = {
     cf.forEach(function (c) { Dados.config[c.chave] = c.valor; });
     Dados.metas = (await Api.db.metas.toArray()).sort(function (a, b) { return new Date(a.criada_em) - new Date(b.criada_em); });
     Dados.metasProg = await Api.db.metas_progresso.toArray();
-    Dados.modelos = await Api.db.modelos.toArray();
+    Dados.cartelas = await Api.db.bingo_cartelas.toArray();
+    Dados.casas = await Api.db.bingo_casas.toArray();
+    Dados.conquistas = await Api.db.conquistas.toArray();
     await Dados.atualizarBadge();
     document.dispatchEvent(new Event('dados:atualizados'));
   },
@@ -287,7 +288,17 @@ var Dados = {
     if (rmp.error) throw rmp.error;
     await Api.db.metas_progresso.clear(); await Api.db.metas_progresso.bulkPut(rmp.data);
 
-    await Dados._puxarModelos();
+    // bingo e conquistas (se falhar, o resto da sincronização continua)
+    try {
+      var rbc = await Supa.client.from('bingo_cartelas').select('*').order('criada_em');
+      var rbk = await Supa.client.from('bingo_casas').select('*').range(0, 4999);
+      var rcq = await Supa.client.from('conquistas').select('*');
+      if (rbc.error || rbk.error || rcq.error) throw (rbc.error || rbk.error || rcq.error);
+      await Api.db.bingo_cartelas.clear(); await Api.db.bingo_cartelas.bulkPut(rbc.data);
+      await Api.db.bingo_casas.clear(); await Api.db.bingo_casas.bulkPut(rbk.data);
+      await Api.db.conquistas.clear(); await Api.db.conquistas.bulkPut(rcq.data);
+      Dados.bingoCarregado = true;
+    } catch (eb) { Dados.ultimoErro = 'bingo: ' + String((eb && eb.message) || eb); }
 
     // sequência de dias calculada no banco (data de São Paulo); só vale quando não há nada pendente
     if (!(await Dados.pendentes())) {
@@ -306,43 +317,6 @@ var Dados = {
   excluirPesagem: async function (data) {
     await Api.db.pesagens.put({ data: data, peso_kg: 0, pendente: 1, excluido: 1 });
     await Dados.carregarLocal(); Dados.sincronizar();
-  },
-
-  /* ---------- modelos de treino (prontos + os seus); gravar exige internet, usar funciona offline ---------- */
-  _modeloLocal: function (m) {
-    var itens = (m.modelos_treino_itens || []).slice().sort(function (a, b) { return a.ordem - b.ordem; });
-    var c = Object.assign({}, m); delete c.modelos_treino_itens; c.itens = itens;
-    return c;
-  },
-  _puxarModelos: async function () {
-    var r = await Supa.client.from('modelos_treino').select('*, modelos_treino_itens(*)').order('nome');
-    if (r.error) throw r.error;
-    await Api.db.modelos.clear();
-    await Api.db.modelos.bulkPut(r.data.map(Dados._modeloLocal));
-  },
-  salvarModelo: async function (modelo) {
-    Dados._online();
-    var r = await Supa.client.rpc('salvar_modelo', { p: modelo });
-    if (r.error) throw r.error;
-    var g = await Supa.client.from('modelos_treino').select('*, modelos_treino_itens(*)').eq('id', r.data).single();
-    if (g.error) throw g.error;
-    await Api.db.modelos.put(Dados._modeloLocal(g.data)); await Dados.carregarLocal();
-    return r.data;
-  },
-  excluirModelo: async function (id) {
-    Dados._online();
-    var r = await Supa.client.from('modelos_treino').delete().eq('id', id);
-    if (r.error) throw r.error;
-    await Api.db.modelos.delete(id); await Dados.carregarLocal();
-  },
-  /* Estimativa de duração (min): tempo de cada série (alvo, ou ~3 s por repetição) + descansos. */
-  estimarModelo: function (m) {
-    var seg = 0;
-    (m.itens || []).forEach(function (i) {
-      var ex = Dados.exMap[i.exercicio_id], por = i.duracao_seg || (i.reps ? i.reps * 3 : 30);
-      seg += i.series * por + i.series * (i.descanso_seg || 0);
-    });
-    return Math.round(seg / 60);
   },
 
   /* ---------- descanso, metas (escritas de metas exigem internet) ---------- */

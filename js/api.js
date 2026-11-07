@@ -29,7 +29,9 @@ var Api = {
       pesagens: 'data,pendente',
       metas: 'id',
       metas_progresso: 'id,meta_id',
-      modelos: 'id'
+      bingo_cartelas: 'id',
+      bingo_casas: 'id,cartela_id',
+      conquistas: 'codigo'
     });
     return Api.db;
   },
