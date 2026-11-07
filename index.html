@@ -83,7 +83,8 @@
       <button class="btn btn-link text-reset p-2" data-bs-toggle="offcanvas" data-bs-target="#menuLateral" aria-label="Abrir menu"><i class="fa-solid fa-bars fa-lg"></i></button>
       <span class="brand-icone" data-app-icone></span>
       <span class="brand-nome" data-app-nome>maromba</span>
-      <span class="badge text-bg-warning d-none ms-auto text-wrap" data-sync-badge></span>
+      <button type="button" id="btnInstalar" class="btn btn-link btn-sm text-body-secondary ms-auto p-1 d-none" aria-label="Instalar o app no celular" title="Instalar no celular"><i class="fa-solid fa-mobile-screen-button me-1"></i><span class="small">Instalar</span></button>
+      <span class="badge text-bg-warning d-none ms-2 text-wrap" data-sync-badge></span>
     </header>
 
     <div id="avisoAtualizacao" class="alert alert-info d-none m-3 mb-0 d-flex align-items-center justify-content-between" role="alert">
@@ -610,6 +611,21 @@
   </div></div>
 </div>
 
+<div class="modal fade" id="modalInstalar" tabindex="-1" aria-labelledby="tituloInstalar" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+    <div class="modal-header"><h2 class="modal-title h5" id="tituloInstalar"><i class="fa-solid fa-mobile-screen-button me-1"></i>Instalar no iPhone / iPad</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button></div>
+    <div class="modal-body">
+      <ol class="mb-2">
+        <li class="mb-2">Abra este endereço no <strong>Safari</strong> (não funciona em outros navegadores do iPhone).</li>
+        <li class="mb-2">Toque no botão <strong>Compartilhar</strong> <i class="fa-solid fa-arrow-up-from-bracket"></i>, na barra do Safari.</li>
+        <li class="mb-2">Role a lista e toque em <strong>Adicionar à Tela de Início</strong>.</li>
+        <li>Confirme em <strong>Adicionar</strong>. O ícone aparece na sua tela, e o app abre como um aplicativo.</li>
+      </ol>
+    </div>
+    <div class="modal-footer"><button type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendi</button></div>
+  </div></div>
+</div>
+
 <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toasts"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -633,6 +649,7 @@
 <script src="js/inicio.js"></script>
 <script src="js/historico.js"></script>
 <script src="js/auth.js"></script>
+<script src="js/instalar.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

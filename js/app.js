@@ -120,6 +120,7 @@ var App = {
     Bingo.init();
     Gps.init();
     Mapa.init();
+    Instalar.init();
     MapaGeral.init();
     Conquistas.init();
     Inicio.init();      // ligado na inicialização, não só ao abrir Configurações
