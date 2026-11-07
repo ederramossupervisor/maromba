@@ -69,6 +69,7 @@ var Historico = {
         (s.pendente ? ' <span class="badge text-bg-warning ms-1">pendente de envio</span>' : '') + '</div>' +
         '<div class="small text-body-secondary">' + meta.join(' · ') + '</div></div>' +
         '<div class="btn-group btn-group-sm flex-none">' +
+        (Dados.trajetos[s.id] ? '<button class="btn btn-outline-secondary" data-trajeto="' + Util.esc(s.id) + '" aria-label="Ver trajeto no mapa" title="Ver trajeto"><i class="fa-solid fa-route"></i></button>' : '') +
         '<button class="btn btn-outline-secondary" data-editar="' + Util.esc(s.id) + '" aria-label="Editar treino"><i class="fa-solid fa-pen"></i></button>' +
         '<button class="btn btn-outline-danger" data-excluir="' + Util.esc(s.id) + '" aria-label="Excluir treino"><i class="fa-solid fa-trash"></i></button></div></div>' +
         '<ul class="list-unstyled small mt-2 mb-0">' + itens + '</ul>' +
@@ -82,7 +83,8 @@ var Historico = {
     var $ = Historico.$;
     ['hfPeriodo', 'hfExercicio', 'hfLocal', 'hfEquip', 'hfDe', 'hfAte'].forEach(function (id) { $(id).addEventListener('change', Historico.render); });
     $('hLista').addEventListener('click', async function (e) {
-      var ed = e.target.closest('[data-editar]'), ex = e.target.closest('[data-excluir]');
+      var ed = e.target.closest('[data-editar]'), ex = e.target.closest('[data-excluir]'), tr = e.target.closest('[data-trajeto]');
+      if (tr) Mapa.abrirTrajeto(tr.getAttribute('data-trajeto'));
       if (ed) Treino.editar(ed.getAttribute('data-editar'));
       if (ex && await Util.confirmar('Excluir este treino? Não dá para desfazer.', 'Excluir')) {
         try { await Dados.excluir(ex.getAttribute('data-excluir')); Util.toast('Treino excluído.', 'ok'); }

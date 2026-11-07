@@ -33,6 +33,18 @@ var Api = {
       bingo_casas: 'id,cartela_id',
       conquistas: 'codigo'
     });
+    Api.db.version(6).stores({
+      configuracoes: 'chave,pendente',
+      exercicios: 'id',
+      sessoes: 'id,data,inicio,pendente',
+      pesagens: 'data,pendente',
+      metas: 'id',
+      metas_progresso: 'id,meta_id',
+      bingo_cartelas: 'id',
+      bingo_casas: 'id,cartela_id',
+      conquistas: 'codigo',
+      trajetos: 'id,pendente'
+    });
     return Api.db;
   },
   rpc: async function (nome, args) {

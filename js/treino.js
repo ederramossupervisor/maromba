@@ -3,7 +3,7 @@ var Treino = {
   st: null,
 
   novoEstado: function () {
-    return { id: null, inicio: null, ambiente: 'casa', local: '', rpe: null, humor: null, clima: '', obs: '', itens: [], editando: false };
+    return { id: null, inicio: null, ambiente: 'casa', local: '', rpe: null, humor: null, clima: '', obs: '', itens: [], editando: false, trajeto: null };
   },
   $: function (id) { return document.getElementById(id); },
 
@@ -62,6 +62,7 @@ var Treino = {
     Treino.marcarAmbiente(); Treino.desenharRpe(); Treino.desenharHumor();
     Treino.desenharItens(); Treino.desenharLocais();
     Treino.$('avisoEdicao').classList.toggle('d-none', !st.editando);
+    if (window.Gps && Gps.s) Gps.desenharAnexo();
     Treino.$('btnSalvarTreino').textContent = st.editando ? 'Salvar alterações' : 'Salvar treino';
   },
 
@@ -87,9 +88,9 @@ var Treino = {
   },
   desenharHumor: function () {
     var box = Treino.$('trHumor');
-    box.innerHTML = Dados.HUMOR.map(function (e, i) {
+    box.innerHTML = Util.HUMOR_FA.map(function (e, i) {
       return '<button type="button" class="btn btn-outline-secondary humor-btn' + (Treino.st.humor === i + 1 ? ' active' : '') +
-        '" data-humor="' + (i + 1) + '" aria-label="Humor ' + (i + 1) + ' de 5" aria-pressed="' + (Treino.st.humor === i + 1) + '">' + e + '</button>';
+        '" data-humor="' + (i + 1) + '" aria-label="' + e.t + ' (' + (i + 1) + ' de 5)" title="' + e.t + '" aria-pressed="' + (Treino.st.humor === i + 1) + '"><i class="fa-solid ' + e.c + '"></i></button>';
     }).join('');
   },
 
@@ -128,7 +129,7 @@ var Treino = {
     var dica = ult ? 'Última vez: ' + Util.esc(Dados.resumoItem(ult)) : '';
     return '<div class="card mb-2 item-card" data-card="' + i + '"><div class="card-body py-2">' +
       '<div class="d-flex justify-content-between align-items-start">' +
-      '<div class="fw-semibold">' + Util.esc(ex.icone) + ' ' + Util.esc(ex.nome) + '</div>' +
+      '<div class="fw-semibold">' + Util.iconeEx(ex) + ' ' + Util.esc(ex.nome) + '</div>' +
       '<button type="button" class="btn btn-sm btn-outline-danger" data-remover="' + i + '" aria-label="Remover ' + Util.esc(ex.nome) + '"><i class="fa-solid fa-xmark"></i></button></div>' +
       (dica ? '<div class="small text-body-secondary mb-1">' + dica + '</div>' : '') +
       '<div class="row g-2">' + campos + '</div>' + bike +
@@ -168,9 +169,7 @@ var Treino = {
   },
 
   /* ---------- seletor de exercício ---------- */
-  _cb: null,
-  abrirSeletor: function (cb) {
-    Treino._cb = typeof cb === 'function' ? cb : null;
+  abrirSeletor: function () {
     Treino.$('pkBusca').value = '';
     Treino.$('pkCategoria').value = '';
     Treino.$('pkAmbiente').value = '';
@@ -188,13 +187,13 @@ var Treino = {
       var vistos = {}, ids = [];
       Dados.sessoes.slice(0, 20).forEach(function (s) { (s.itens || []).forEach(function (i) { if (!vistos[i.exercicio_id] && Dados.exMap[i.exercicio_id] && ids.length < 6) { vistos[i.exercicio_id] = 1; ids.push(i.exercicio_id); } }); });
       if (ids.length) rec = '<div class="mb-2"><div class="small text-body-secondary mb-1">Recentes</div><div class="d-flex flex-wrap gap-1">' + ids.map(function (id) {
-        var e = Dados.exMap[id]; return '<button type="button" class="btn btn-sm btn-outline-primary" data-escolher="' + id + '">' + Util.esc(e.icone) + ' ' + Util.esc(e.nome) + '</button>';
+        var e = Dados.exMap[id]; return '<button type="button" class="btn btn-sm btn-outline-primary" data-escolher="' + id + '">' + Util.iconeEx(e) + ' ' + Util.esc(e.nome) + '</button>';
       }).join('') + '</div></div>';
     }
     Treino.$('pkLista').innerHTML = rec + (lista.length ? lista.map(function (e) {
       return '<div class="list-group-item d-flex align-items-center gap-2 px-0">' +
         '<button type="button" class="btn btn-link text-reset text-start flex-grow-1 p-2" data-escolher="' + e.id + '">' +
-        '<span class="fs-5 me-2">' + Util.esc(e.icone) + '</span><span class="fw-semibold">' + Util.esc(e.nome) + '</span>' +
+        '<span class="fs-5 me-2">' + Util.iconeEx(e) + '</span><span class="fw-semibold">' + Util.esc(e.nome) + '</span>' +
         '<span class="d-block small text-body-secondary">' + Util.esc(Dados.CAT[e.categoria]) + ' · ' + Util.esc(Dados.EQUIP[e.equipamento] || e.equipamento) +
         (e.user_id ? ' · meu' : '') + '</span></button>' +
         (e.user_id ? '<button type="button" class="btn btn-sm btn-outline-danger" data-excluir-ex="' + e.id + '" aria-label="Excluir ' + Util.esc(e.nome) + '"><i class="fa-solid fa-trash"></i></button>' : '') +
@@ -202,7 +201,6 @@ var Treino = {
     }).join('') : '<div class="text-body-secondary small py-3">Nenhum exercício encontrado. Você pode criar o seu abaixo.</div>');
   },
   escolher: function (id) {
-    if (Treino._cb) { var f = Treino._cb; Treino._cb = null; bootstrap.Modal.getOrCreateInstance(Treino.$('modalExercicio')).hide(); f(id); return; }
     Treino.st.itens.push({ exercicio_id: id, series: null, reps: null, carga_kg: null, duracao_seg: null, distancia_km: null, resistencia: null, cadencia_rpm: null, calorias_aparelho: null, tipo_treino: null });
     bootstrap.Modal.getOrCreateInstance(Treino.$('modalExercicio')).hide();
     Treino.desenharItens();
@@ -219,7 +217,7 @@ var Treino = {
     try {
       var e = await Dados.criarExercicio({
         nome: nome, categoria: Treino.$('nxCategoria').value, modo: Treino.$('nxModo').value, met: Math.min(25, Math.max(0.5, met)),
-        equipamento: Treino.$('nxEquip').value, ambientes: amb, icone: Treino.$('nxIcone').value.trim() || '⭐'
+        equipamento: Treino.$('nxEquip').value, ambientes: amb, icone: 'fa-' + (Treino.$('nxIcone').value || 'dumbbell')
       });
       Treino.$('frmNovoEx').reset();
       Util.toast('Exercício criado.', 'ok');
@@ -299,6 +297,7 @@ var Treino = {
       sessao.calorias = Dados.calorias(sessao, (Perfil.dados || {}).peso);
       var prs = [];
       itens.forEach(function (it) { prs = prs.concat(Dados.recordes(it, id)); });
+      if (st.trajeto) await Api.db.trajetos.put({ id: id, rota: st.trajeto.rota, distancia_km: st.trajeto.distancia_km, pendente: 1 });
       await Dados.salvar(sessao);
       Treino.cronoZerar();
       Util.toast(st.editando ? 'Treino atualizado.' : 'Treino salvo.', 'ok');
@@ -311,7 +310,7 @@ var Treino = {
   },
   celebrar: function (prs) {
     Treino.$('listaRecordes').innerHTML = prs.map(function (p) {
-      return '<li class="list-group-item">' + Util.esc(p.icone) + ' <strong>' + Util.esc(p.exercicio) + '</strong>: ' + Util.esc(p.rotulo) +
+      return '<li class="list-group-item">' + p.iconeHtml + ' <strong>' + Util.esc(p.exercicio) + '</strong>: ' + Util.esc(p.rotulo) +
         ' — <strong>' + Util.esc(p.valor) + '</strong> <span class="text-body-secondary small">(antes: ' + Util.esc(p.anterior) + ')</span></li>';
     }).join('');
     bootstrap.Modal.getOrCreateInstance(Treino.$('modalRecorde')).show();
@@ -326,7 +325,7 @@ var Treino = {
     $('btnCronoZerar').addEventListener('click', Treino.cronoZerar);
     setInterval(function () { if (!document.hidden && Util.userId) Treino.cronoDesenhar(); }, 500);
     ['btnRepetirUltimo', 'btnRepetirInicio'].forEach(function (b) { $(b).addEventListener('click', Treino.repetirUltimo); });
-    $('btnAddExercicio').addEventListener('click', function () { Treino.abrirSeletor(); });
+    $('btnAddExercicio').addEventListener('click', Treino.abrirSeletor);
     $('frmTreino').addEventListener('submit', Treino.salvar);
     $('btnCancelarEdicao').addEventListener('click', function () { Treino.limpar(); App.ir('historico'); });
     document.querySelectorAll('[data-amb]').forEach(function (b) {
@@ -354,10 +353,11 @@ var Treino = {
       if (esc) Treino.escolher(esc.getAttribute('data-escolher'));
       else if (del) Treino.excluirExercicio(del.getAttribute('data-excluir-ex'));
     });
+    $('nxIcone').innerHTML = Util.FA_ICONES.map(function (i) { return '<option value="' + i.k + '">' + i.nome + '</option>'; }).join('');
     $('frmNovoEx').addEventListener('submit', Treino.criarExercicio);
     document.addEventListener('dados:atualizados', function () { Treino.desenharLocais(); });
     Treino.desenharTudo();
     Treino.cronoDesenhar();
   },
-  aoAbrir: function () { Treino.desenharLocais(); Treino.cronoDesenhar(); }
+  aoAbrir: function () { Treino.desenharLocais(); Treino.cronoDesenhar(); if (window.Gps) Gps.aoAbrir(); }
 };

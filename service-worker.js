@@ -1,4 +1,4 @@
-const VERSAO = 'v9';
+const VERSAO = 'v8';
 const CACHE_APP = 'app-' + VERSAO;
 const CACHE_RT = 'app-runtime-' + VERSAO;
 const ARQUIVOS = [

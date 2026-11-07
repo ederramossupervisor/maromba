@@ -1,6 +1,6 @@
 /* Dados: cache local (Dexie) + sincronização com o Supabase + cálculos (ritmo, calorias, recordes). */
 var Dados = {
-  ex: [], exMap: {}, sessoes: [], pesagens: [], config: {}, metas: [], metasProg: [], cartelas: [], casas: [], conquistas: [], bingoCarregado: false, seqServidor: null, _sync: null, ultimoErro: null,
+  ex: [], exMap: {}, sessoes: [], pesagens: [], config: {}, metas: [], metasProg: [], cartelas: [], casas: [], conquistas: [], trajetos: {}, bingoCarregado: false, seqServidor: null, _sync: null, ultimoErro: null,
   EQUIP: {
     nenhum: 'Sem equipamento', bicicleta_ergometrica: 'Bicicleta ergométrica', bicicleta: 'Bicicleta', halteres: 'Halteres',
     barra: 'Barra', elastico: 'Elástico', esteira: 'Esteira', banco: 'Banco', corda: 'Corda',
@@ -131,6 +131,7 @@ var Dados = {
     Dados.cartelas = await Api.db.bingo_cartelas.toArray();
     Dados.casas = await Api.db.bingo_casas.toArray();
     Dados.conquistas = await Api.db.conquistas.toArray();
+    Dados.trajetos = {}; (await Api.db.trajetos.toArray()).forEach(function (t) { Dados.trajetos[t.id] = t; });
     await Dados.atualizarBadge();
     document.dispatchEvent(new Event('dados:atualizados'));
   },
@@ -166,7 +167,7 @@ var Dados = {
   excluir: async function (id) {
     var s = await Api.db.sessoes.get(id); if (!s) return;
     s.excluido = 1; s.pendente = 1;
-    await Api.db.sessoes.put(s);
+    await Api.db.sessoes.put(s); await Api.db.trajetos.delete(id);
     await Dados.carregarLocal();
     Dados.sincronizar();
   },
@@ -210,6 +211,16 @@ var Dados = {
       }
       if (s.excluido) await Api.db.sessoes.delete(s.id);
       else await Api.db.sessoes.update(s.id, { pendente: 0 });
+    }
+    // 1a) enviar trajetos de GPS pendentes (depois dos treinos, por causa do vínculo)
+    var pt = await Api.db.trajetos.where('pendente').equals(1).toArray();
+    for (var tj = 0; tj < pt.length; tj++) {
+      var rt = await Supa.client.from('sessao_trajetos').upsert({ sessao_id: pt[tj].id, rota: pt[tj].rota, distancia_km: pt[tj].distancia_km }, { onConflict: 'sessao_id' });
+      if (rt.error) {
+        if (!rt.error.code) throw new Error('Sem conexão com o servidor');
+        Dados.ultimoErro = 'Um trajeto aguarda o envio do treino: ' + rt.error.message; continue;
+      }
+      await Api.db.trajetos.update(pt[tj].id, { pendente: 0 });
     }
     // 1b) enviar pesagens pendentes
     var pp = await Api.db.pesagens.where('pendente').equals(1).toArray();
@@ -261,6 +272,18 @@ var Dados = {
     for (var m = 0; m < todas.length; m++) {
       if (!todas[m].pendente && !vistos[todas[m].id]) await Api.db.sessoes.delete(todas[m].id); // apagada em outro aparelho
     }
+    // trajetos que existem no servidor (o conteúdo é baixado só ao abrir o mapa)
+    try {
+      var rtl = await Supa.client.from('sessao_trajetos').select('sessao_id,distancia_km').range(0, 4999);
+      if (rtl.error) throw rtl.error;
+      var noSrv = {};
+      for (var tl = 0; tl < rtl.data.length; tl++) {
+        noSrv[rtl.data[tl].sessao_id] = true;
+        if (!(await Api.db.trajetos.get(rtl.data[tl].sessao_id))) await Api.db.trajetos.put({ id: rtl.data[tl].sessao_id, rota: null, distancia_km: Number(rtl.data[tl].distancia_km), pendente: 0 });
+      }
+      var locT = await Api.db.trajetos.toArray();
+      for (var lt = 0; lt < locT.length; lt++) if (!locT[lt].pendente && !noSrv[locT[lt].id]) await Api.db.trajetos.delete(locT[lt].id);
+    } catch (et) { Dados.ultimoErro = 'trajetos: ' + String((et && et.message) || et); }
     var rpes = await Supa.client.from('pesagens').select('data,peso_kg').order('data');
     if (rpes.error) throw rpes.error;
     var locaisP = await Api.db.pesagens.toArray(), vp = {};
