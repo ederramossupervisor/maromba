@@ -3,6 +3,7 @@ var App = {
     { id: 'inicio', nome: 'Início', icone: 'fa-house' },
     { id: 'registrar', nome: 'Registrar treino', icone: 'fa-dumbbell' },
     { id: 'historico', nome: 'Histórico', icone: 'fa-clock-rotate-left' },
+    { id: 'mapa', nome: 'Mapa', icone: 'fa-map' },
     { id: 'metas', nome: 'Metas', icone: 'fa-bullseye' },
     { id: 'bingo', nome: 'Bingo', icone: 'fa-table-cells' },
     { id: 'conquistas', nome: 'Conquistas', icone: 'fa-medal' },
@@ -31,6 +32,7 @@ var App = {
     if (id === 'metas') Metas.aoAbrir();
     if (id === 'inicio') Inicio.aoAbrir();
     if (id === 'bingo') Bingo.aoAbrir();
+    if (id === 'mapa') MapaGeral.aoAbrir();
     if (id === 'conquistas') Conquistas.aoAbrir();
   },
 
@@ -103,6 +105,7 @@ var App = {
     try { App.ehAdmin = await Api.admin.ehAdmin(); } catch (e) { App.ehAdmin = false; }
     document.getElementById('cardConvites').classList.toggle('d-none', !App.ehAdmin);
     if (App.ehAdmin) App.carregarConvites();
+    Gps.aposLogin();
     Dados.iniciar();
   },
 
@@ -115,6 +118,9 @@ var App = {
     Estat.init();
     Metas.init();
     Bingo.init();
+    Gps.init();
+    Mapa.init();
+    MapaGeral.init();
     Conquistas.init();
     Inicio.init();      // ligado na inicialização, não só ao abrir Configurações
     App.ligarConvites();

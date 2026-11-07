@@ -248,3 +248,14 @@ a:hover{ color:var(--primary-hover); }
 .medalha-nome{ font-weight:600; font-size:.85rem; margin-top:6px; }
 .medalha-desc{ font-size:.7rem; color:var(--text-secondary); line-height:1.2; }
 .medalha-data{ font-size:.68rem; color:var(--text-secondary); margin-top:3px; }
+
+/* ---------- Mapa / GPS ---------- */
+.mapa-gps{ height:230px; border-radius:var(--radius-sm); border:1px solid var(--border-color); z-index:0; }
+.mapa-trajeto{ height:55vh; min-height:300px; border-radius:var(--radius-sm); border:1px solid var(--border-color); z-index:0; }
+.mapa-escuro .leaflet-tile-pane{ filter:invert(1) hue-rotate(180deg) brightness(.9) contrast(.95); }
+.leaflet-container{ font-family:var(--font-family); }
+.gps-pino span{ display:block; width:18px; height:18px; border-radius:50%; background:#8B4A3D; border:3px solid #fff; box-shadow:0 0 0 4px rgba(139,74,61,.3); }
+.gps-ponto span{ display:block; width:16px; height:16px; border-radius:50%; border:3px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,.4); }
+.gps-ponto.ini span, .legenda-ponto.ini{ background:#5C6B5A; } .gps-ponto.fim span, .legenda-ponto.fim{ background:#8B4A3D; }
+.legenda-ponto{ display:inline-block; width:11px; height:11px; border-radius:50%; vertical-align:middle; }
+.mapa-geral{ height:62vh; min-height:340px; }
